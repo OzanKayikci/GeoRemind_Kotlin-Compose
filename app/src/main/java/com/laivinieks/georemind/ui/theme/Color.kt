@@ -10,25 +10,26 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-
-val Background = Color(0xFFF2F2F2)
+// Dark Theme Colors
+val DarkBackground = Color(0xFF1B1B1B) // Dark Background
 val Primary = Color(0xFFA2C4C9)
 val Secondary = Color(0xFF508287)
 val Accent1 = Color(0xFF81DEEA)
 val Accent2 = Color(0xFFFFAB91)
-val Text = Color(0xFF283747) // Blackish grey
-val Success = Color(0xFF4CAF50)// Green
-val Error = Color(0xFFF65959) // Red
+val Text = Color(0xFFFFFFFF) // Blackish grey
+val Success =Color(0xFF78C27A) // Green
+val Error =  Color(0xFFFF5252) // Red
 
-// Dark Theme Colors
-val DarkBackground = Color(0xFF1B1B1B) // Dark Background
-val DarkPrimary = Color(0xFF36454F) // Dark Primary
+
+// Light Theme Colors
+val Background = Color(0xFFF2F2F2)
+val DarkPrimary = Color(0xFF8BA8BB) // Dark Primary
 val DarkSecondary = Color(0xFF607884) // Dark Secondary
 val DarkAccent1 = Color(0xFF6CA1A9) // Dark Accent 1
 val DarkAccent2 = Color(0xFFFF8F6F) // Dark Accent 2
-val DarkText = Color(0xFFFFFFFF) // White Text
-val DarkSuccess =  Color(0xFF78C27A) // Green Success
-val DarkError = Color(0xFFFF5252) // Red Error
+val DarkText =Color(0xFF283747)  // White Text
+val DarkSuccess =Color(0xFF4CAF50)   // Green Success
+val DarkError =Color(0xFFF65959) // Red Error
 
 
 // Powerful Colors for Marking Notes

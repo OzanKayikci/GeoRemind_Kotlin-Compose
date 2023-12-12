@@ -16,10 +16,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val LightColorScheme = lightColorScheme(
+private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     secondary = Secondary,
-    background = Background,
+    background = DarkBackground,
     onBackground = Text,
     tertiary = Accent1,
     onTertiary = Accent2,
@@ -29,10 +29,10 @@ private val LightColorScheme = lightColorScheme(
 )
 
 // Dark Theme Colors
-private val DarkColorScheme = darkColorScheme(
+private val LightColorScheme = lightColorScheme(
     primary = DarkPrimary,
     secondary = DarkSecondary,
-    background = DarkBackground,
+    background = Background,
     onBackground = DarkText,
     tertiary = DarkAccent1,
     onTertiary = DarkAccent2,

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Remove
 
 import androidx.compose.material3.Icon
@@ -26,11 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
@@ -42,7 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.laivinieks.georemind.feature_note.domain.modal.Note
-import com.laivinieks.georemind.ui.theme.MarkColor1
+import com.laivinieks.georemind.feature_note.domain.util.Converters
 
 @Composable
 fun NoteItem(
@@ -63,13 +60,13 @@ fun NoteItem(
             }
             clipPath(clipPath) {
                 drawRoundRect(
-                    color = Color(note.color),
+                    color = Converters.getSecondaryColor(Color((note.color))),
                     size = size,
                     cornerRadius = CornerRadius(cornerRadius.toPx())
                 )
                 drawRoundRect(
                     color = Color(
-                        ColorUtils.blendARGB(note.color, 0x000000, 0.2f)
+                        note.color
                     ),
                     topLeft = Offset(size.width - cutCornerSize.toPx(), -100f),
                     size = Size(cutCornerSize.toPx() + 100f, cutCornerSize.toPx() + 100f),
@@ -103,20 +100,23 @@ fun NoteItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        IconButton(onClick = { onDeleteClick }, modifier = modifier
-            .align(Alignment.TopEnd)
-            .offset((-18).dp, 18.dp)) {
+        IconButton(
+            onClick = { onDeleteClick }, modifier = Modifier
+                .align(Alignment.TopEnd)
+                .fillMaxWidth(0.1f)
+                .offset((-18).dp, 18.dp)
+        ) {
             Icon(
                 imageVector = Icons.Rounded.Remove,
                 contentDescription = "Delete Note",
-                modifier.size(30.dp),
+                Modifier.fillMaxWidth(),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun NoteItemPreview() {
     MaterialTheme {
