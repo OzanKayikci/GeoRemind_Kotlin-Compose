@@ -6,7 +6,7 @@ import androidx.core.graphics.ColorUtils
 
 object Converters {
 
-    fun getSecondaryColor(color: Color): Color {
-        return Color(ColorUtils.blendARGB(color.toArgb(), 0xffffff, 0.5f))
+    fun getSecondaryColor(color: Color, ratio:Float): Color {
+        return Color(ColorUtils.blendARGB(color.toArgb(), 0xffffff, ratio))
     }
 }

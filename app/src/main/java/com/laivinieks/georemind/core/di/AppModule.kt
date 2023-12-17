@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.di
+package com.laivinieks.georemind.core.di
 
 import android.app.Application
 import androidx.room.Room
@@ -46,4 +46,5 @@ object AppModule {
             getNote = GetNote(repository)
         )
     }
+
 }

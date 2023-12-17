@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,8 +25,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -37,16 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.domain.util.Converters
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.components.TransparentHintTextField
-import com.laivinieks.georemind.ui.theme.DarkAccent1
+import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
+import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -67,10 +63,22 @@ fun AddEditNoteScreen(
         )
     }
 
-
     val scope = rememberCoroutineScope()
 
+    val noteColors = LocalCustomColorsPalette.current
+
     LaunchedEffect(key1 = true) {
+        var iteratedNoteColor = iterateOverNoteColors(noteColors)
+        val initColor = iteratedNoteColor.random()
+        viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
+            noteBackgroundAnimatable.animateTo(
+                targetValue = Color(initColor.toArgb()),
+                animationSpec = tween(
+                    durationMillis = 500
+                ),
+            )
+        }
+
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditNoteViewModel.UiEvent.ShowSnackBar -> {
@@ -87,19 +95,24 @@ fun AddEditNoteScreen(
 
     }
 
+    val colorRatio = if (isSystemInDarkTheme()) 0.3f else 0.5f
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 viewModel.onEvent(AddEditNoteEvent.SaveNote)
-            }, containerColor = MaterialTheme.colorScheme.tertiary) {
+            }, containerColor = MaterialTheme.colorScheme.primary) {
                 Icon(imageVector = Icons.Rounded.Save, contentDescription = "Save Note")
             }
         },
     ) { paddingValues ->
+        val padding = paddingValues
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp, vertical = paddingValues.calculateTopPadding())
+                .padding(horizontal = 8.dp, vertical = paddingValues.calculateTopPadding() / 4)
         ) {
             Row(
                 modifier = Modifier
@@ -107,8 +120,8 @@ fun AddEditNoteScreen(
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Note.noteColors.forEach { color ->
+                val colors = iterateOverNoteColors(noteColors)
+                colors.forEach { color ->
                     val colorInt = color.toArgb()
                     Box(
                         modifier = Modifier
@@ -119,7 +132,7 @@ fun AddEditNoteScreen(
                             .border(
                                 width = 3.dp,
                                 color = if (viewModel.noteColor.value == colorInt) {
-                                    Color.Black
+                                    MaterialTheme.colorScheme.onPrimaryContainer
                                 } else Color.Transparent,
                                 shape = CircleShape
                             )
@@ -132,7 +145,7 @@ fun AddEditNoteScreen(
                                         ),
                                     )
                                 }
-                                viewModel.onEvent(AddEditNoteEvent.ChangeColor(colorInt))
+                                viewModel.onEvent(AddEditNoteEvent.ChangeColor(colors.indexOf(color)))
                             }
                     ) {
 
@@ -141,7 +154,12 @@ fun AddEditNoteScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Converters.getSecondaryColor(noteBackgroundAnimatable.value)).padding(vertical = 16.dp, horizontal = 16.dp)) {
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Converters.getSecondaryColor(noteBackgroundAnimatable.value, colorRatio))
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
+            ) {
                 //title
                 TransparentHintTextField(
                     text = titleState.text,
@@ -152,19 +170,19 @@ fun AddEditNoteScreen(
                         viewModel.onEvent(AddEditNoteEvent.ChangeTitleFocus(it))
                     },
                     isHintVisible = titleState.isHintVisible,
-                    isSingleLine = true,
-                    textStyle = MaterialTheme.typography.titleLarge,
+                    maxLine = 1,
+                    textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
                     modifier = Modifier.weight(8f)
                 )
 
-                    Box(
-                        modifier = Modifier
+                Box(
+                    modifier = Modifier
 
-                            .size(30.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(noteBackgroundAnimatable.value)
-                            .weight(1f)
-                    )
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(noteBackgroundAnimatable.value)
+                        .weight(1f)
+                )
 
             }
 
@@ -178,12 +196,18 @@ fun AddEditNoteScreen(
                 }, onFocusChange = {
                     viewModel.onEvent(AddEditNoteEvent.ChangeContentFocus(it))
                 },
+
                 isHintVisible = contentState.isHintVisible,
-                isSingleLine = false,
-                textStyle = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(16.dp)).background(Converters.getSecondaryColor(noteBackgroundAnimatable.value)).padding(vertical = 24.dp, horizontal = 16.dp)
+                maxLine = 20,
+                textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Converters.getSecondaryColor(noteBackgroundAnimatable.value, colorRatio))
+                    .padding(vertical = 24.dp, horizontal = 16.dp)
             )
         }
     }
 
 }
+

@@ -3,6 +3,8 @@ package com.laivinieks.georemind.feature_note.presentation.add_edit_note.compone
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,24 +21,29 @@ fun TransparentHintTextField(
     modifier: Modifier = Modifier,
     isHintVisible: Boolean = true,
     onValueChange: (String) -> Unit,
-    textStyle: TextStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimary),
-    isSingleLine: Boolean = false,
+    textStyle: TextStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer),
+    maxLine: Int = 1,
     onFocusChange: (FocusState) -> Unit
 ) {
     Box(modifier = modifier) {
-        BasicTextField(value = text,
+        BasicTextField(
+            value = text,
 
             onValueChange = onValueChange,
-            singleLine = isSingleLine,
+            maxLines = maxLine,
             textStyle = textStyle,
-
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
                     onFocusChange(it)
-                }) {
-            if (isHintVisible) Text(text = hint, style = textStyle, color = Color.DarkGray)
-            else Text(text = text, fontSize = textStyle.fontSize, color = MaterialTheme.colorScheme.onPrimary)
+                },
+
+            ) { innerTextField ->
+            Box(modifier = Modifier) {
+                if (isHintVisible) Text(text = hint, style = textStyle, color = LocalContentColor.current.copy(alpha = 0.5f))
+                innerTextField()
+            }
+
         }
     }
 }

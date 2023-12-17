@@ -1,11 +1,9 @@
 package com.laivinieks.georemind.feature_note.presentation.add_edit_note
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,6 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditNoteViewModel @Inject constructor(private val noteUseCases: NoteUseCases, savedStateHandle: SavedStateHandle) : ViewModel() {
 
+    private var getNoteColorPalette: List<Color> = Note.defaultNoteColors
+
 
     private val _noteTitle = mutableStateOf(NoteTextFieldState(hint = "Enter Title..."))
     val noteTitle: State<NoteTextFieldState> = _noteTitle
@@ -28,12 +28,16 @@ class AddEditNoteViewModel @Inject constructor(private val noteUseCases: NoteUse
     private val _noteContent = mutableStateOf(NoteTextFieldState(hint = "Enter content"))
     val noteContent: State<NoteTextFieldState> = _noteContent
 
-    private val _noteColor = mutableStateOf(Note.noteColors.random().toArgb())
+    private val _noteColor = mutableStateOf(Note.defaultNoteColors.random().toArgb())
     val noteColor: State<Int> = _noteColor
 
     private val _eventFLow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFLow.asSharedFlow()
 
+    fun updateNoteColor(color: Int, iteratedNoteColor: List<Color>) {
+        _noteColor.value = color
+        getNoteColorPalette = iteratedNoteColor
+    }
 
     private var currentNoteId: Int? = null
 
@@ -52,7 +56,7 @@ class AddEditNoteViewModel @Inject constructor(private val noteUseCases: NoteUse
                             isHintVisible = false
                         )
 
-                        _noteColor.value = note.color
+                        _noteColor.value = getNoteColorPalette[note.color].toArgb()
                     }
                 }
             }

@@ -12,11 +12,10 @@ data class Note(
     val title: String,
     val content: String,
     val timestamp: Long,
-    val color: Int,
+    val color: Int, // index of noteColor
 ) {
     companion object {
-        val noteColors = listOf(MarkColor1, MarkColor2, MarkColor3, MarkColor4, MarkColor5, MarkColor6)
-
+        val defaultNoteColors = listOf(MarkColor1, MarkColor2, MarkColor3, MarkColor4, MarkColor5, MarkColor6)
 
     }
 }

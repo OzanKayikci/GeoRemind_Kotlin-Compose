@@ -2,7 +2,9 @@ package com.laivinieks.georemind.feature_note.presentation.notes
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
@@ -12,7 +14,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,13 +29,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.Sort
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -44,14 +44,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.laivinieks.georemind.feature_note.presentation.util.Screen
+import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
 import com.laivinieks.georemind.ui.theme.GeoRemindTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -64,12 +64,18 @@ fun NotesScreen(
     val state = viewModel.state.value
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val itemVisibility = remember {
+        Animatable(1f)
+    }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.AddEditNoteScreen.route)
+                    navController.navigate(FeatureScreen.AddEditNoteFeatureScreen.route)
 
                 },
                 containerColor = MaterialTheme.colorScheme.primary
@@ -79,10 +85,11 @@ fun NotesScreen(
             }
         }
     ) { innerPadding ->
+        val padding = innerPadding
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(0.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -90,7 +97,7 @@ fun NotesScreen(
                     .padding(horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Your Note", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Notes", fontWeight = FontWeight.Bold,style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimaryContainer    )
                 IconButton(
                     onClick = {
                         viewModel.onEvent(NotesEvent.ToggleOrderSection)
@@ -118,24 +125,31 @@ fun NotesScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 8.dp)
+
             ) {
-                items(state.notes) { note ->
+                items(items = state.notes, key = {it.id!!}) { note ->
                     NoteItem(note = note,
                         modifier = Modifier
                             .fillMaxWidth()
                             .animateItemPlacement(
                                 animationSpec = spring(
                                     dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow,
-                                    visibilityThreshold = IntOffset.VisibilityThreshold
+                                    stiffness = Spring.StiffnessMedium/4,
+                                    visibilityThreshold = IntOffset.VisibilityThreshold,
+
                                 )
+                              //  tween(durationMillis = 500, delayMillis = 100, easing = FastOutLinearInEasing)
                             )
                             .clickable {
-                                navController.navigate(Screen.AddEditNoteScreen.route + "?noteId=${note.id}&noteColor=${note.color}")
+                                navController.navigate(FeatureScreen.AddEditNoteFeatureScreen.route + "?noteId=${note.id}&noteColor=${note.color}")
                             },
                         onDeleteClick = {
-                            viewModel.onEvent(NotesEvent.DeleteNote(note))
+                            Log.d("clicked delet","da")
+                            scope.launch {
+                                itemVisibility.animateTo(targetValue = 0f, animationSpec = tween(2000))
 
+                            }
+                            viewModel.onEvent(NotesEvent.DeleteNote(note))
                             scope.launch {
                                 val result = snackbarHostState.showSnackbar(message = "Note Deleted", actionLabel = "Undo")
 

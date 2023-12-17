@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -18,27 +19,31 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
+    onPrimary = Text,
     secondary = Secondary,
     background = DarkBackground,
     onBackground = Text,
     tertiary = Accent1,
-    onTertiary = Accent2,
+    onTertiaryContainer = Accent2,
+    onTertiary = Text,
     onError = Success,
     error = Error,
-    onPrimary = Text// Text color on primary background
+    onPrimaryContainer = Text // Text color
 )
 
 // Dark Theme Colors
 private val LightColorScheme = lightColorScheme(
     primary = DarkPrimary,
+    onPrimary = Text,
     secondary = DarkSecondary,
     background = Background,
     onBackground = DarkText,
     tertiary = DarkAccent1,
-    onTertiary = DarkAccent2,
+    onTertiary = Text,
+    onTertiaryContainer = Accent2,
     onError = DarkSuccess,
     error = DarkError,
-    onPrimary = DarkText // Text color on primary background
+    onPrimaryContainer = DarkText // Text color
 )
 
 //private val DarkColorScheme = darkColorScheme(
@@ -63,6 +68,26 @@ private val LightColorScheme = lightColorScheme(
 //    */
 //)
 
+
+val OnLightCustomColorsPalette = CustomColorsPalette(
+    noteColor1 = MarkColor1,
+    noteColor2 = MarkColor2,
+    noteColor3 = MarkColor3,
+    noteColor4 = MarkColor4,
+    noteColor5 = MarkColor5,
+    noteColor6 = MarkColor6
+
+)
+val OnDarkCustomColorsPalette = CustomColorsPalette(
+    noteColor1 = DMarkColor1,
+    noteColor2 = DMarkColor2,
+    noteColor3 = DMarkColor3,
+    noteColor4 = DMarkColor4,
+    noteColor5 = DMarkColor5,
+    noteColor6 = DMarkColor6
+
+)
+
 @Composable
 fun GeoRemindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -70,7 +95,6 @@ fun GeoRemindTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-
 
     val colorScheme = when {
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -81,6 +105,12 @@ fun GeoRemindTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
+    val customColorsPalette =
+        if (darkTheme) OnDarkCustomColorsPalette
+        else OnLightCustomColorsPalette
+
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -90,11 +120,14 @@ fun GeoRemindTheme(
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
+    CompositionLocalProvider(
+        LocalCustomColorsPalette provides customColorsPalette
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content,
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content,
-
-        )
+            )
+    }
 }
