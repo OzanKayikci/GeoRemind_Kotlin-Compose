@@ -1,20 +1,13 @@
 package com.laivinieks.georemind.core.presentation
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.laivinieks.georemind.core.util.Screen
 import com.laivinieks.georemind.feature_note.presentation.FeatureNoteNavHost
-import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteScreen
-import com.laivinieks.georemind.feature_note.presentation.notes.NotesScreen
-import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
-import com.laivinieks.georemind.feature_remainder.presentation.remainders.RemaindersScreen
+import com.laivinieks.georemind.feature_reminder.presentation.remainders.RemaindersScreen
 
 @Composable
 fun GeoRemindNavHost(

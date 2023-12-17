@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.domain.modal.NoteState
-import com.laivinieks.georemind.feature_note.domain.usecase.NoteUseCases
+import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases
 import com.laivinieks.georemind.feature_note.domain.util.NoteOrder
-import com.laivinieks.georemind.feature_note.domain.util.OrderType
+import com.laivinieks.georemind.core.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn

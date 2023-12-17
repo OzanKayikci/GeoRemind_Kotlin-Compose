@@ -1,12 +1,10 @@
-package com.laivinieks.georemind.feature_note.domain.usecase
+package com.laivinieks.georemind.feature_note.domain.use_case
 
-import android.util.Log
 import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.domain.repository.NoteRepository
 import com.laivinieks.georemind.feature_note.domain.util.NoteOrder
-import com.laivinieks.georemind.feature_note.domain.util.OrderType
+import com.laivinieks.georemind.core.domain.util.OrderType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
 
 class GetNotes(private val repository: NoteRepository) {
@@ -14,7 +12,7 @@ class GetNotes(private val repository: NoteRepository) {
 
     // invoke is an operator. so we overload invoke with operator keyword
     operator fun invoke(noteOrder: NoteOrder = NoteOrder.Date(OrderType.Descending)): Flow<List<Note>> {
-        return repository.getNotes().map { notes ->
+        return repository.getModels().map { notes ->
             when (noteOrder.orderType) {
                 is OrderType.Ascending -> {
                     when (noteOrder) {

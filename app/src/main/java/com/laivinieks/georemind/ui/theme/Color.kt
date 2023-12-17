@@ -11,8 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 // Dark Theme Colors
-val DarkBackground = Color(0xFF05161a) // Dark Background
-val Primary = Color(0xFFadaef5)
+val DarkBackground = Color(0xFF283747) // Dark Background
+val Primary = Color(0xFF7580ee)
 val Secondary = Color(0xFFffc3c0)
 val Accent1 = Color(0xFF81DEEA)
 val Accent2 = Color(0xFFFFAB91)
@@ -23,7 +23,7 @@ val Error = Color(0xFFFF5252) // Red
 
 // Light Theme Colors
 val Background = Color(0xFFF2F2F2)
-val DarkPrimary = Color(0xFF7580ee) // Dark Primary
+val DarkPrimary = Color(0xFF9A9BF7) // Dark Primary
 val DarkSecondary = Color(0xFFff9190) // Dark Secondary
 val DarkAccent1 = Color(0xFF6CA1A9) // Dark Accent 1
 val DarkAccent2 = Color(0xFFFF8F6F) // Dark Accent 2

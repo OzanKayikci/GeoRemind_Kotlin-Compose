@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.laivinieks.georemind.feature_note.domain.modal.InvalidNoteException
 import com.laivinieks.georemind.feature_note.domain.modal.Note
-import com.laivinieks.georemind.feature_note.domain.usecase.NoteUseCases
+import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

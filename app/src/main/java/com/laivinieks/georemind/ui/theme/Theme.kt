@@ -40,7 +40,7 @@ private val LightColorScheme = lightColorScheme(
     onBackground = DarkText,
     tertiary = DarkAccent1,
     onTertiary = Text,
-    onTertiaryContainer = Accent2,
+    onTertiaryContainer = DarkAccent2,
     onError = DarkSuccess,
     error = DarkError,
     onPrimaryContainer = DarkText // Text color
@@ -111,6 +111,18 @@ fun GeoRemindTheme(
         else OnLightCustomColorsPalette
 
 
+    val customFonts  = Typography.copy(
+        bodyLarge = MaterialTheme.typography.bodyLarge.copy(fontFamily = fonts),
+        bodyMedium = MaterialTheme.typography.bodyMedium.copy(fontFamily = fonts),
+        bodySmall = MaterialTheme.typography.bodySmall.copy(fontFamily = fonts),
+        titleLarge = MaterialTheme.typography.titleLarge.copy(fontFamily = fonts),
+        titleSmall = MaterialTheme.typography.titleSmall.copy(fontFamily = fonts),
+        titleMedium = MaterialTheme.typography.titleMedium.copy(fontFamily = fonts),
+        labelSmall = MaterialTheme.typography.labelSmall.copy(fontFamily = fonts),
+        labelMedium = MaterialTheme.typography.labelMedium.copy(fontFamily = fonts),
+        labelLarge = MaterialTheme.typography.labelLarge.copy(fontFamily = fonts),
+    )
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -125,7 +137,7 @@ fun GeoRemindTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
+            typography = customFonts,
             content = content,
 
             )

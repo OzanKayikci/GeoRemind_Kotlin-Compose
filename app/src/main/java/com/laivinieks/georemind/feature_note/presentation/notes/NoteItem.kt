@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 
 import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.toArgb
 
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import com.laivinieks.georemind.feature_note.domain.modal.Note
-import com.laivinieks.georemind.feature_note.domain.util.Converters
+import com.laivinieks.georemind.core.domain.util.Converters
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 
@@ -94,7 +93,7 @@ fun NoteItem(
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = note.content,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = modifier.fillMaxWidth(1f),
                 maxLines = 10,

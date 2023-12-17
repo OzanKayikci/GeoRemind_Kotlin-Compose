@@ -2,7 +2,6 @@ package com.laivinieks.georemind.feature_note.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,7 +11,6 @@ import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditN
 
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesScreen
 import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
-import com.laivinieks.georemind.feature_remainder.presentation.remainders.RemaindersScreen
 
 @Composable
 fun FeatureNoteNavHost(

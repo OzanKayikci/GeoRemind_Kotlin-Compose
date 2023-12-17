@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_note.domain.usecase
+package com.laivinieks.georemind.feature_note.domain.use_case
 
 import com.laivinieks.georemind.feature_note.domain.modal.InvalidNoteException
 import com.laivinieks.georemind.feature_note.domain.modal.Note
@@ -9,7 +9,7 @@ class AddNote(
 ) {
     suspend operator fun invoke(note: Note) {
         checkValidations(note)
-        repository.insertNote(note)
+        repository.insertModel(note)
     }
 
     @Throws(InvalidNoteException::class)

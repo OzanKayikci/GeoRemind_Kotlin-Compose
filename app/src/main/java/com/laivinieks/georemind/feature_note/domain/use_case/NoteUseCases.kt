@@ -1,6 +1,4 @@
-package com.laivinieks.georemind.feature_note.domain.usecase
-
-import javax.inject.Inject
+package com.laivinieks.georemind.feature_note.domain.use_case
 
 
 /**

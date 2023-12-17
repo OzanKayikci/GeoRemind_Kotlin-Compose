@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.laivinieks.georemind.feature_note.domain.util.Converters
+import com.laivinieks.georemind.core.domain.util.Converters
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.components.TransparentHintTextField
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors

@@ -1,6 +1,7 @@
-package com.laivinieks.georemind.feature_note.domain.util
+package com.laivinieks.georemind.core.domain.util
 
 import android.view.View
+import com.laivinieks.georemind.core.domain.util.Constants
 
 class SnackBarButtonListener(private val function: (string: String) -> Unit) : View.OnClickListener {
 

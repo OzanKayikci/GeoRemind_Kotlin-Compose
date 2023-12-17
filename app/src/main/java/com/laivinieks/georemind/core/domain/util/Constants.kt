@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_note.domain.util
+package com.laivinieks.georemind.core.domain.util
 
 import com.laivinieks.georemind.ui.theme.*
 
