@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.laivinieks.georemind.core.presentation.components.NoteTextFieldState
 import com.laivinieks.georemind.feature_note.domain.modal.InvalidNoteException
 import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases

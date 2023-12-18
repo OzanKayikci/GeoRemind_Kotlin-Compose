@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_note.presentation.add_edit_note
+package com.laivinieks.georemind.core.presentation.components
 
 data class NoteTextFieldState(
     val text: String = "",

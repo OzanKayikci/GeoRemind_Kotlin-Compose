@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_reminder.presentation.remainders
+package com.laivinieks.georemind.feature_reminder.presentation.reminders
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -43,10 +43,11 @@ import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesEvent
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesViewModel
 import com.laivinieks.georemind.feature_note.presentation.notes.OrderSection
+import com.laivinieks.georemind.feature_reminder.presentation.util.ReminderFeatureScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RemaindersScreen(
+fun RemindersScreen(
     navController: NavController,
     viewModel: NotesViewModel = hiltViewModel()
 
@@ -84,7 +85,7 @@ fun RemaindersScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-
+                    navController.navigate(ReminderFeatureScreen.AddEditReminderScreen.route)
                 },
                 containerColor = MaterialTheme.colorScheme.primary
 
@@ -144,7 +145,7 @@ fun RemaindersScreen(
             ) {
                 items(remainders) { remainder ->
 
-                    RemainderItem(
+                    ReminderItem(
                         note = remainder,
                         modifier = Modifier
                             .padding(8.dp)

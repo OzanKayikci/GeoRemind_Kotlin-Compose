@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
+import com.laivinieks.georemind.feature_note.presentation.util.NoteFeatureScreen
 import com.laivinieks.georemind.ui.theme.GeoRemindTheme
 import kotlinx.coroutines.launch
 
@@ -75,7 +75,7 @@ fun NotesScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(FeatureScreen.AddEditNoteFeatureScreen.route)
+                    navController.navigate(NoteFeatureScreen.AddEditNoteScreen.route)
 
                 },
                 containerColor = MaterialTheme.colorScheme.primary
@@ -141,7 +141,7 @@ fun NotesScreen(
                               //  tween(durationMillis = 500, delayMillis = 100, easing = FastOutLinearInEasing)
                             )
                             .clickable {
-                                navController.navigate(FeatureScreen.AddEditNoteFeatureScreen.route + "?noteId=${note.id}&noteColor=${note.color}")
+                                navController.navigate(NoteFeatureScreen.AddEditNoteScreen.route + "?noteId=${note.id}&noteColor=${note.color}")
                             },
                         onDeleteClick = {
                             Log.d("clicked delet","da")
@@ -160,8 +160,6 @@ fun NotesScreen(
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-
-
                 }
             }
 

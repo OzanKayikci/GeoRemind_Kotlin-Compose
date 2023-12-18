@@ -14,8 +14,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 
 import androidx.navigation.compose.rememberNavController
-import com.laivinieks.georemind.core.presentation.GeoRemindBottomBar
-import com.laivinieks.georemind.core.presentation.GeoRemindNavHost
+import com.laivinieks.georemind.core.presentation.navigation.GeoRemindBottomBar
+import com.laivinieks.georemind.core.presentation.navigation.GeoRemindNavHost
 import com.laivinieks.georemind.ui.theme.GeoRemindTheme
 import dagger.hilt.android.AndroidEntryPoint
 

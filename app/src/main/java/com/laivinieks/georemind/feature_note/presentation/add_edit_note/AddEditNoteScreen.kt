@@ -40,7 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.laivinieks.georemind.core.domain.util.Converters
-import com.laivinieks.georemind.feature_note.presentation.add_edit_note.components.TransparentHintTextField
+import com.laivinieks.georemind.core.presentation.components.ColorPicker
+import com.laivinieks.georemind.core.presentation.components.TransparentHintTextField
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 import kotlinx.coroutines.flow.collectLatest
@@ -65,10 +66,12 @@ fun AddEditNoteScreen(
 
     val scope = rememberCoroutineScope()
 
-    val noteColors = LocalCustomColorsPalette.current
+    val iteratedNoteColor =iterateOverNoteColors( LocalCustomColorsPalette.current)
 
     LaunchedEffect(key1 = true) {
-        var iteratedNoteColor = iterateOverNoteColors(noteColors)
+
+        // we use it in LaunchedEffect because animateTo is a suspend function and it must call with coroutine
+
         val initColor = iteratedNoteColor.random()
         viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
             noteBackgroundAnimatable.animateTo(
@@ -78,7 +81,6 @@ fun AddEditNoteScreen(
                 ),
             )
         }
-
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditNoteViewModel.UiEvent.ShowSnackBar -> {
@@ -114,44 +116,24 @@ fun AddEditNoteScreen(
                 .fillMaxSize()
                 .padding(horizontal = 8.dp, vertical = paddingValues.calculateTopPadding() / 4)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val colors = iterateOverNoteColors(noteColors)
-                colors.forEach { color ->
-                    val colorInt = color.toArgb()
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .shadow(15.dp, CircleShape)
-                            .clip(CircleShape)
-                            .background(color)
-                            .border(
-                                width = 3.dp,
-                                color = if (viewModel.noteColor.value == colorInt) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else Color.Transparent,
-                                shape = CircleShape
-                            )
-                            .clickable {
-                                scope.launch {
-                                    noteBackgroundAnimatable.animateTo(
-                                        targetValue = Color(colorInt),
-                                        animationSpec = tween(
-                                            durationMillis = 500
-                                        ),
-                                    )
-                                }
-                                viewModel.onEvent(AddEditNoteEvent.ChangeColor(colors.indexOf(color)))
-                            }
-                    ) {
-
+            // color picker for note color
+            ColorPicker(
+                noteColors = iteratedNoteColor,
+                selectedColor = viewModel.noteColor.value
+            ){newColor ->
+                if(newColor != viewModel.noteColor.value){
+                    viewModel.onEvent(AddEditNoteEvent.ChangeColor(newColor))
+                    scope.launch {
+                        noteBackgroundAnimatable.animateTo(
+                            targetValue = iteratedNoteColor[newColor],
+                            animationSpec = tween(
+                                durationMillis = 500
+                            ),
+                        )
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(

@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.core.presentation
+package com.laivinieks.georemind.core.presentation.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

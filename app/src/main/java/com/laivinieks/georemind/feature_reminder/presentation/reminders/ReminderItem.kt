@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_reminder.presentation.remainders
+package com.laivinieks.georemind.feature_reminder.presentation.reminders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -36,7 +36,7 @@ import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 
 @Composable
-fun RemainderItem(
+fun ReminderItem(
     note: Note,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 10.dp,
@@ -119,7 +119,7 @@ fun RemainderItem(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun RemainderItemPreview() {
-    RemainderItem(note = Note(id = null, title = "Title", content = "Content", timestamp = 0, color = 1)) {
+    ReminderItem(note = Note(id = null, title = "Title", content = "Content", timestamp = 0, color = 1)) {
 
     }
 }

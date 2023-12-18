@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_note.presentation.add_edit_note.components
+package com.laivinieks.georemind.core.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
