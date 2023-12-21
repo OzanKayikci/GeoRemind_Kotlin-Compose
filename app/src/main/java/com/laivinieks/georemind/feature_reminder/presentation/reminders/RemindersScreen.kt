@@ -66,7 +66,7 @@ fun RemindersScreen(
         Note(
             id = 5,
             title = "Title",
-            content = "Yarın Yapılacak olan açık artırmaya katılmama kararı aldık. Alınan bu kadar sonrasında uygulamalu olarak yapılacak",
+            content = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             timestamp = 0,
             color = 4
         ),

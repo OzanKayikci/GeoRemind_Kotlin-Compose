@@ -1,58 +1,71 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector4D
-import androidx.compose.animation.core.tween
+
+import android.Manifest
+import androidx.compose.animation.AnimatedVisibility
+
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.rounded.Check
+
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Settings
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+
+
 import com.laivinieks.georemind.core.presentation.components.ColorPicker
-import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteEvent
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.LocationPickerDialog
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.TimePickerDialog
-import com.laivinieks.georemind.ui.theme.CustomColorsPalette
-import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
-import kotlinx.coroutines.launch
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location_permission.LaunchPermissionRequest
+
+
 import java.util.Calendar
 
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BottomSheetContent(
     modifier: Modifier = Modifier,
@@ -60,6 +73,7 @@ fun BottomSheetContent(
     selectedColor: Int,
     newColor: (Int) -> Unit,
 ) {
+
 
     var selectedHour by remember {
         mutableIntStateOf(Calendar.getInstance()[Calendar.HOUR_OF_DAY])
@@ -72,9 +86,16 @@ fun BottomSheetContent(
     var showTimeDialog by remember {
         mutableStateOf(false)
     }
+    var showLocationDialog by remember {
+        mutableStateOf(false)
+    }
 
     var selectTime by remember { mutableStateOf(false) }
     var selectLocation by remember { mutableStateOf(false) }
+
+    var showLocationPermission by remember {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = modifier
@@ -89,6 +110,17 @@ fun BottomSheetContent(
             modifier = Modifier.padding(10.dp)
         )
 
+//location permissions dialog
+        if (showLocationPermission) {
+            LaunchPermissionRequest() { isGranted ->
+                if (isGranted) {
+                    showLocationDialog = true
+                }
+                showLocationPermission = false
+            }
+        }
+
+        // dialog fir time picker
         if (showTimeDialog) {
             TimePickerDialog(
                 selectedHour = selectedHour,
@@ -100,40 +132,40 @@ fun BottomSheetContent(
             }
         }
 
-        /** button for choosing time*/
-        Box(
-            modifier = if (selectTime) (Modifier
-                .padding(0.dp, 8.dp)
-                .shadow(16.dp, CircleShape)
-                .clip(CircleShape)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)) else Modifier,
-            contentAlignment = Alignment.Center
-        )
+        // dialog fir location picker
+        if (showLocationDialog) {
+            LocationPickerDialog() { showDialog ->
+                showLocationDialog = showDialog
+            }
+        }
 
-        {
+        /** button for choosing time*/
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+
+
+            AnimatebleBox(modifier = Modifier.matchParentSize(), selectTime)
+
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(if(selectTime) 0.78f else 0.92f)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-               horizontalArrangement =  if(!selectTime) Arrangement.Center else Arrangement.Start
+                    .fillMaxWidth(0.78f)
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
+
+                horizontalArrangement = Arrangement.Start
             ) {
 
                 Switch(
-
-                            checked = selectTime,
+                    checked = selectTime,
                     onCheckedChange = {
                         selectTime = it
                     },
                     thumbContent = if (selectTime) {
                         {
-                            Icon(
-                                imageVector = Icons.Rounded.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
+//                            Icon(
+//                                imageVector = Icons.Rounded.Check,
+//                                contentDescription = null,
+//                                modifier = Modifier.size(SwitchDefaults.IconSize),
+//                                tint = MaterialTheme.colorScheme.primary,
+//                            )
                         }
                     } else {
                         null
@@ -152,53 +184,50 @@ fun BottomSheetContent(
                         contentDescription = null,
                         Modifier.size(30.dp),
 
-                    )
+                        )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        if (!selectTime) "Choose Time" else "$selectedHour : $selectedMinute",
+                        if (!selectTime) "Choose Time" else String.format("%02d:%02d", selectedHour, selectedMinute),
                         fontWeight = FontWeight.ExtraBold,
                         style = MaterialTheme.typography.titleLarge,
 
-                    )
+                        )
                 }
             }
         }
 
         /** button for choosing location*/
         Box(
-            modifier = if (selectLocation) (Modifier
-                .padding(0.dp, 8.dp)
-                .shadow(16.dp, CircleShape)
-                .clip(CircleShape)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)) else Modifier,
+            modifier = Modifier,
             contentAlignment = Alignment.Center
         )
 
         {
+
+            AnimatebleBox(state = selectLocation, modifier = Modifier.matchParentSize())
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(if(selectLocation) 0.78f else 1f)
-                    .padding(16.dp),
+                    .fillMaxWidth(if (selectLocation) 0.78f else 1f)
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
 
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement =  if(!selectLocation) Arrangement.Center else Arrangement.Start
+                horizontalArrangement = if (!selectLocation) Arrangement.Center else Arrangement.Start
             ) {
 
                 Switch(
 
                     checked = selectLocation,
                     onCheckedChange = {
-                        selectLocation = it
+                        showLocationPermission = true
                     },
                     thumbContent = if (selectLocation) {
                         {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
+//                            Icon(
+//                                imageVector = Icons.Filled.Check,
+//                                contentDescription = null,
+//                                modifier = Modifier.size(SwitchDefaults.IconSize),
+//                                tint = MaterialTheme.colorScheme.primary,
+//                            )
                         }
                     } else {
                         null
@@ -208,9 +237,9 @@ fun BottomSheetContent(
                 TextButton(
                     enabled = selectLocation,
                     onClick = {
-                        // showDialog = true
+                        showLocationDialog = true
                     },
-                    modifier = Modifier
+                    modifier = Modifier,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.LocationOn,
@@ -218,14 +247,37 @@ fun BottomSheetContent(
                         Modifier.size(30.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Choose Location",  fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleLarge)
+                    Text("Choose Location", fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
-        // Example button for choosing location
 
     }
+
+
 }
+
+
+@Composable
+fun AnimatebleBox(modifier: Modifier = Modifier, state: Boolean) {
+
+    AnimatedVisibility(
+        visible = state,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Box(
+            modifier = modifier
+                .padding(0.dp, 8.dp)
+                .shadow(4.dp, CircleShape)
+                .clip(CircleShape)
+                .fillMaxWidth()
+                .height(80.dp)
+                .background(MaterialTheme.colorScheme.background)
+        )
+    }
+}
+
 
 //@Preview(showSystemUi = true)
 //@Composable

@@ -104,18 +104,18 @@ fun NoteItem(
         Canvas(
             modifier = Modifier
                 .matchParentSize()
-                .blur(20.dp)
-                .rotate(-45f)
-                .offset(x=285.dp,y= 182.dp)
+                .blur(8.dp)
+
+
 
         ) {
             clipPath(clipPathPublic) {
                 drawRoundRect(
                     color =
-                    Color.Black,
-                    //topLeft = Offset(size.width - cutCornerSize.toPx() - 50f, size.height - 150f),
-                    size = Size(cutCornerSize.toPx()-50f, cutCornerSize.toPx()-100f),
-                    cornerRadius = CornerRadius(5.dp.toPx()),
+                    Color.Black.copy(alpha = 0.2f),
+                    topLeft = Offset(size.width - cutCornerSize.toPx()-10f , size.height - 150f),
+                    size = Size(cutCornerSize.toPx(), cutCornerSize.toPx()),
+                    cornerRadius = CornerRadius(10.dp.toPx()),
 
                 )
             }

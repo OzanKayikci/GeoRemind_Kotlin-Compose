@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
-
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -62,7 +62,6 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -82,13 +81,32 @@ dependencies {
 
     //Dagger - Hilt
     implementation("com.google.dagger:hilt-android:2.48")
-    kapt ("com.google.dagger:hilt-android-compiler:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 
-    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.8.9")
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
-    kapt ("androidx.room:room-compiler:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.6.1")
+
+    // Google maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    // Google maps for compose
+    implementation("com.google.maps.android:maps-compose:4.3.0")
+
+    // KTX for the Maps SDK for Android
+    implementation("com.google.maps.android:maps-ktx:5.0.0")
+    // KTX for the Maps SDK for Android Utility Library
+    implementation("com.google.maps.android:maps-utils-ktx:5.0.0")
+
+// for permission
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    //DataStore
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
+
 }

@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,17 +61,30 @@ fun ReminderItem(
 
         )
         {
-
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                maxLines = 1,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                overflow = TextOverflow.Ellipsis,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-                )
 
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    overflow = TextOverflow.Ellipsis,
+
+                    )
+                IconButton(
+                    onClick = {
+
+                    },modifier = Modifier.size(24.dp),
+                ) {
+                    Icon(modifier = Modifier.size(24.dp),imageVector = Icons.Rounded.Close, contentDescription = "delete reminder")
+                }
+            }
 
             Divider(color = Color(noteColor), thickness = 0.25.dp, modifier = Modifier.padding(0.dp, 4.dp))
 

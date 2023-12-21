@@ -1,5 +1,6 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
+import android.content.Context
 import android.location.Location
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditReminderViewModel @Inject constructor(private val reminderUserCases: ReminderUserCases, savedStateHandle: SavedStateHandle) : ViewModel() {
+class AddEditReminderViewModel @Inject constructor(private val reminderUserCases: ReminderUserCases, savedStateHandle: SavedStateHandle) :
+    ViewModel() {
 
     private var getReminderColorPalette: List<Color> = Reminder.defaultRemainderColors
 
@@ -37,10 +39,10 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
     val reminderColor: State<Int> = _reminderColor
 
     private val _reminderLocation = mutableStateOf<Location?>(null)
-    val reminderLocation : MutableState<Location?> = _reminderLocation
+    val reminderLocation: MutableState<Location?> = _reminderLocation
 
     private val _reminderTimestamp = mutableStateOf<Long?>(null)
-    val reminderTimestamp : MutableState<Long?> = _reminderTimestamp
+    val reminderTimestamp: MutableState<Long?> = _reminderTimestamp
 
     private val _eventFLow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFLow.asSharedFlow()

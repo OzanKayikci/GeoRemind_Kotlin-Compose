@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,15 +61,12 @@ fun TimePickerDialog(
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(size = 12.dp)
+                shape = RoundedCornerShape(size = 16.dp)
             ),
         onDismissRequest = { callback(false, localSelectedHour, localSelectedMinute) }
     ) {
         Column(
             modifier = Modifier
-                .background(
-                    color = Color.LightGray.copy(alpha = 0.3f)
-                )
                 .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -82,11 +80,16 @@ fun TimePickerDialog(
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // dismiss button
                 TextButton(onClick = { callback(false, localSelectedHour, localSelectedMinute) }) {
-                    Text(text = "Dismiss")
+                    Text(
+                        text = "Dismiss",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
                 }
 
                 // confirm button
@@ -98,7 +101,7 @@ fun TimePickerDialog(
                         callback(false, localSelectedHour, localSelectedMinute)
                     }
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = "Confirm",style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 }
             }
 

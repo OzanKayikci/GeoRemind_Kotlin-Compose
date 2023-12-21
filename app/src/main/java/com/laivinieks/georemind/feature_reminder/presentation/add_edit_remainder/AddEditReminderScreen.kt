@@ -210,7 +210,7 @@ fun AddEditReminderScreen(
                         BottomSheetContent(
                             modifier = Modifier.fillMaxWidth(),
                             iteratedNoteColors = iteratedReminderColor,
-                            selectedColor = viewModel.reminderColor.value
+                            selectedColor = viewModel.reminderColor.value,
                         ){newColor ->
                             if(newColor != viewModel.reminderColor.value){
                                 viewModel.onEvent(AddEditReminderEvent.ChangeColor(newColor))
