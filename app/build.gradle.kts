@@ -96,17 +96,22 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     // Google maps for compose
     implementation("com.google.maps.android:maps-compose:4.3.0")
+    // Optionally, you can include the Compose utils library for Clustering,
+    // Street View metadata checks, etc.
+    implementation("com.google.maps.android:maps-compose-utils:4.3.0")
+    // Optionally, you can include the widgets library for ScaleBar, etc.
+    implementation("com.google.maps.android:maps-compose-widgets:4.3.0")
 
-    // KTX for the Maps SDK for Android
-    implementation("com.google.maps.android:maps-ktx:5.0.0")
-    // KTX for the Maps SDK for Android Utility Library
-    implementation("com.google.maps.android:maps-utils-ktx:5.0.0")
+//    // KTX for the Maps SDK for Android
+//    implementation("com.google.maps.android:maps-ktx:5.0.0")
+//    // KTX for the Maps SDK for Android Utility Library
+//    implementation("com.google.maps.android:maps-utils-ktx:5.0.0")
 
 // for permission
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
     //DataStore
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore-core:1.0.0")
 
 }
