@@ -20,5 +20,9 @@ class LocationRepositoryImpl @Inject constructor(
         locationManager.stopLocationTracking()
     }
 
+    override suspend fun checkLocationSettings(onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        locationManager.checkLocationSettings(onSuccess, onFailure)
+    }
+
 
 }

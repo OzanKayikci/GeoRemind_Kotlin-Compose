@@ -6,4 +6,5 @@ import com.google.android.gms.location.LocationCallback
 interface LocationRepository {
     suspend fun startLocationUpdates(callback: LocationCallback)
     suspend fun stopLocationUpdates(callback: LocationCallback)
+    suspend fun checkLocationSettings(onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 }

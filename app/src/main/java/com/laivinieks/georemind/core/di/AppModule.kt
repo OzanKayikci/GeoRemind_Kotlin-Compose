@@ -25,7 +25,8 @@ import com.laivinieks.georemind.feature_reminder.domain.use_case.DeleteReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminders
 import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUserCases
-import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.LocationUserCases
+import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.CheckLocationSettingsUseCase
+import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.LocationUseCases
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.StartLocationUpdatesUseCase
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.StopLocationUpdatesUseCase
 import dagger.Module
@@ -108,16 +109,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationUseCases(repository: LocationRepository): LocationUserCases {
-        return LocationUserCases(
+    fun provideLocationUseCases(repository: LocationRepository): LocationUseCases {
+        return LocationUseCases(
             startLocationUpdatesUseCase = StartLocationUpdatesUseCase(
                 locationRepository = repository
-            ), stopLocationUpdatesUseCase = StopLocationUpdatesUseCase(
+            ),
+            stopLocationUpdatesUseCase = StopLocationUpdatesUseCase(
                 locationRepository = repository
+            ),
+            checkLocationSettingsUseCase = CheckLocationSettingsUseCase(
+                locationRepository = repository
+            ),
+
+
             )
-
-
-        )
     }
 
 

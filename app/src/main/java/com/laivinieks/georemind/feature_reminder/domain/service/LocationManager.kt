@@ -9,4 +9,5 @@ interface LocationManager {
     fun startLocationTracking()
     fun stopLocationTracking()
     fun changeRequest(timeInterval: Long, minimalDistance: Float)
+    fun checkLocationSettings(onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
 }

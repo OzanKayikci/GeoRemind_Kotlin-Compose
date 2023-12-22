@@ -1,5 +1,8 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location
 
+import android.app.Activity
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +52,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,29 +115,43 @@ fun LocationPickerDialog(
 
 
 
+
     DisposableEffect(Unit) {
-        viewModel.startLocationUpdates()
+        viewModel.checkLocationSettings(context as Activity) { isLocationEnabled ->
+            if (!isLocationEnabled) {
+                callback(false, locationName)
+
+                Toast.makeText(context, "Location settings are not satisfied. Please open location", Toast.LENGTH_LONG).show()
+            } else {
+                viewModel.startLocationUpdates()
+            }
+
+
+        }
 
         onDispose {
             viewModel.stopLocationUpdates()
         }
     }
 
-    val locationState by viewModel.location
+    var locationState = viewModel.location.value
 
-    var latitude by remember{ mutableStateOf(if (locationState != null) locationState!!.latitude else 0.0) }
-    var longitude  by remember{ mutableStateOf(if (locationState != null) locationState!!.longitude else 0.0) }
-    var markerPosition by remember { mutableStateOf<LatLng?>(null) }
+
+    var latitude = locationState?.latitude ?: 0.0
+    var longitude = locationState?.longitude ?: 0.0
+
+    var markerState = rememberMarkerState()
 
 
     if (getLocationName) {
+
         scope.launch {
             getLocationName(context = context, latitude = latitude, longitude = longitude) { isFetched, name ->
                 locationName = name
-                getLocationName = false
             }
 
         }
+        getLocationName = false
 
     }
 
@@ -163,23 +181,26 @@ fun LocationPickerDialog(
                 properties = properties,
                 uiSettings = uiSettings,
                 onMapClick = { latLng ->
-                    markerPosition = latLng
-
+                    latitude = latLng.latitude
+                    longitude = latLng.longitude
                 },
                 cameraPositionState =
                 CameraPositionState(CameraPosition(LatLng(latitude, longitude), 18f, 0f, 0f))
 
 
             ) {
-                markerPosition?.let {
-                    Marker(
-                        state = rememberMarkerState(position = it),
-                        title = "Clicked Location", // Optional title for the marker
-                        snippet = "Latitude: ${it.latitude}, Longitude: ${it.longitude}" // Optional snippet
-                    )
-                    latitude = it.latitude
-                    longitude = it.longitude
-                }
+
+                Marker(
+                    state = markerState.apply {
+                        position = LatLng(latitude, longitude)
+
+                    },
+                    title = "Clicked Location", // Optional title for the marker
+                    snippet = "Latitude: ${markerState.position.latitude}, Longitude: ${markerState.position.longitude}" // Optional snippet
+
+                )
+
+
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
