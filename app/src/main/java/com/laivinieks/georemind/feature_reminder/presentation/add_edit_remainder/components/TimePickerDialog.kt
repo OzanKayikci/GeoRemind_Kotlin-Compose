@@ -1,10 +1,14 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,11 +28,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import com.laivinieks.georemind.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,55 +74,76 @@ fun TimePickerDialog(
         initialHour = localSelectedHour,
         initialMinute = localSelectedMinute
     )
+
+
     AlertDialog(
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(size = 16.dp)
-            ),
+            .fillMaxWidth(),
         onDismissRequest = { callback(false, localSelectedHour, localSelectedMinute) }
     ) {
-        Column(
-            modifier = Modifier
-                .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            // time picker
-            TimePicker(state = timePickerState)
-
-
-            // buttons
-            Row(
+            // Blurred background
+            Box(
                 modifier = Modifier
-                    .padding(top = 12.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // dismiss button
-                TextButton(onClick = { callback(false, localSelectedHour, localSelectedMinute) }) {
-                    Text(
-                        text = "Dismiss",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-
-                // confirm button
-                TextButton(
-                    onClick = {
-
-                        localSelectedHour = timePickerState.hour
-                        localSelectedMinute = timePickerState.minute
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .fillMaxSize()
+                    .clickable {
                         callback(false, localSelectedHour, localSelectedMinute)
-                    }
-                ) {
-                    Text(text = "Confirm",style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                }
-            }
+                    },
+            )
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(size = 16.dp)
+                    )
+                    .clickable {
 
+                    }
+                    .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // time picker
+                TimePicker(state = timePickerState)
+
+
+                // buttons
+                Row(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // dismiss button
+                    TextButton(onClick = { callback(false, localSelectedHour, localSelectedMinute) }) {
+                        Text(
+                            text = "Dismiss",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+
+                    // confirm button
+                    TextButton(
+                        onClick = {
+
+                            localSelectedHour = timePickerState.hour
+                            localSelectedMinute = timePickerState.minute
+                            callback(false, localSelectedHour, localSelectedMinute)
+                        }
+                    ) {
+                        Text(text = "Confirm", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+            }
         }
     }
 }

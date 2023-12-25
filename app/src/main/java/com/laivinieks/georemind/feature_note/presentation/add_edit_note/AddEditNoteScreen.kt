@@ -55,32 +55,33 @@ fun AddEditNoteScreen(
 ) {
     val titleState = viewModel.noteTitle.value
     val contentState = viewModel.noteContent.value
-
+    val colorState = viewModel.noteColor.value
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val iteratedNoteColor = iterateOverNoteColors(LocalCustomColorsPalette.current)
 
     val noteBackgroundAnimatable = remember {
         Animatable(
-            Color(if (noteColor != -1) noteColor else viewModel.noteColor.value)
+            Color(if (noteColor != -1) iteratedNoteColor[noteColor].toArgb() else iteratedNoteColor[colorState].toArgb())
         )
     }
 
     val scope = rememberCoroutineScope()
 
-    val iteratedNoteColor =iterateOverNoteColors( LocalCustomColorsPalette.current)
 
     LaunchedEffect(key1 = true) {
 
         // we use it in LaunchedEffect because animateTo is a suspend function and it must call with coroutine
 
-        val initColor = iteratedNoteColor.random()
-        viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
-            noteBackgroundAnimatable.animateTo(
-                targetValue = Color(initColor.toArgb()),
-                animationSpec = tween(
-                    durationMillis = 500
-                ),
-            )
-        }
+//        val initColor = iteratedNoteColor.random()
+//        viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
+//            noteBackgroundAnimatable.animateTo(
+//                targetValue = Color(initColor.toArgb()),
+//                animationSpec = tween(
+//                    durationMillis = 500
+//                ),
+//            )
+//        }
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditNoteViewModel.UiEvent.ShowSnackBar -> {
@@ -120,8 +121,9 @@ fun AddEditNoteScreen(
             ColorPicker(
                 noteColors = iteratedNoteColor,
                 selectedColor = viewModel.noteColor.value
-            ){newColor ->
-                if(newColor != viewModel.noteColor.value){
+            ) { newColor ->
+                //it's index of color
+                if (newColor != viewModel.noteColor.value) {
                     viewModel.onEvent(AddEditNoteEvent.ChangeColor(newColor))
                     scope.launch {
                         noteBackgroundAnimatable.animateTo(

@@ -52,16 +52,18 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
+import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationPickerDialog(
+    selectedLocation: LocationData?,
     viewModel: LocationViewModel = hiltViewModel(),
     callback: (
         closeDialog: Boolean,
-        locationName: String
+        locationData: LocationData?,
     ) -> Unit,
 ) {
 
@@ -110,16 +112,14 @@ fun LocationPickerDialog(
         mutableStateOf(false)
     }
     var locationName by remember {
-        mutableStateOf("")
+        mutableStateOf(selectedLocation?.let { it.locationName } ?: "")
     }
-
-
 
 
     DisposableEffect(Unit) {
         viewModel.checkLocationSettings(context as Activity) { isLocationEnabled ->
             if (!isLocationEnabled) {
-                callback(false, locationName)
+                callback(false,null)
 
                 Toast.makeText(context, "Location settings are not satisfied. Please open location", Toast.LENGTH_LONG).show()
             } else {
@@ -140,7 +140,17 @@ fun LocationPickerDialog(
     var latitude = locationState?.latitude ?: 0.0
     var longitude = locationState?.longitude ?: 0.0
 
-    var markerState = rememberMarkerState()
+
+    val selectedLocationMarkerStete = selectedLocation?.let {
+        rememberMarkerState(
+            key = "location",
+            position = LatLng(selectedLocation.latitude, selectedLocation.longitude)
+        )
+    } ?: rememberMarkerState(
+        key = "location",
+        position = LatLng(latitude, longitude)
+    )
+
 
 
     if (getLocationName) {
@@ -166,7 +176,7 @@ fun LocationPickerDialog(
             )
             .padding(4.dp),
         onDismissRequest = {
-            callback(false, locationName)
+            callback(false, LocationData(latitude, longitude, locationName))
         }
     ) {
 
@@ -191,12 +201,9 @@ fun LocationPickerDialog(
             ) {
 
                 Marker(
-                    state = markerState.apply {
-                        position = LatLng(latitude, longitude)
-
-                    },
+                    state = selectedLocationMarkerStete,
                     title = "Clicked Location", // Optional title for the marker
-                    snippet = "Latitude: ${markerState.position.latitude}, Longitude: ${markerState.position.longitude}" // Optional snippet
+                    snippet = "Latitude: ${selectedLocationMarkerStete.position.latitude}, Longitude: ${selectedLocationMarkerStete.position.longitude}" // Optional snippet
 
                 )
 
@@ -243,12 +250,12 @@ fun LocationPickerDialog(
                             getLocationName = true
 
                         }) {
-                        Text(text = "Select Locaiton")
+                        Text(text = "Select Location")
                     }
 
 
                     IconButton(
-                        onClick = { callback(false, locationName) },
+                        onClick = { callback(false, LocationData(latitude, longitude, locationName)) },
                         modifier = Modifier
                             .padding(8.dp)
                             .clip(CircleShape)

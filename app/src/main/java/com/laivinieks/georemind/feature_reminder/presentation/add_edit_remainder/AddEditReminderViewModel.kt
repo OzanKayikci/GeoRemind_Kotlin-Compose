@@ -1,7 +1,6 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
-import android.content.Context
-import android.location.Location
+import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -10,20 +9,24 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.laivinieks.georemind.core.domain.util.TimeConverters.convertTimeToTimestamp
+import com.laivinieks.georemind.core.domain.util.TimeConverters.convertTimestampToTime
 import com.laivinieks.georemind.core.presentation.components.NoteTextFieldState
 import com.laivinieks.georemind.feature_note.domain.modal.InvalidNoteException
-import com.laivinieks.georemind.feature_note.domain.modal.Note
-import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases
 import com.laivinieks.georemind.feature_reminder.domain.model.Reminder
-import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUserCases
+import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUseCases
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.LocationSelectorState
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.ReminderTimeSelectorState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditReminderViewModel @Inject constructor(private val reminderUserCases: ReminderUserCases, savedStateHandle: SavedStateHandle) :
+class AddEditReminderViewModel @Inject constructor(private val reminderUseCases: ReminderUseCases, savedStateHandle: SavedStateHandle) :
     ViewModel() {
 
     private var getReminderColorPalette: List<Color> = Reminder.defaultRemainderColors
@@ -35,14 +38,14 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
     private val _reminderContent = mutableStateOf(NoteTextFieldState(hint = "Enter content"))
     val reminderContent: State<NoteTextFieldState> = _reminderContent
 
-    private val _reminderColor = mutableStateOf(Reminder.defaultRemainderColors.random().toArgb())
+    private val _reminderColor = mutableStateOf(getReminderColorPalette.indexOf(getReminderColorPalette.random()))
     val reminderColor: State<Int> = _reminderColor
 
-    private val _reminderLocation = mutableStateOf<Location?>(null)
-    val reminderLocation: MutableState<Location?> = _reminderLocation
+    private val _reminderLocation = mutableStateOf<LocationSelectorState>(LocationSelectorState(isSelected = false))
+    val reminderLocation: MutableState<LocationSelectorState> = _reminderLocation
 
-    private val _reminderTimestamp = mutableStateOf<Long?>(null)
-    val reminderTimestamp: MutableState<Long?> = _reminderTimestamp
+    private val _reminderTimestamp = mutableStateOf<ReminderTimeSelectorState>(ReminderTimeSelectorState(isSelected = false))
+    val reminderTimestamp: MutableState<ReminderTimeSelectorState> = _reminderTimestamp
 
     private val _eventFLow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFLow.asSharedFlow()
@@ -58,7 +61,7 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
         savedStateHandle.get<Int>("reminderId")?.let { noteId ->
             if (noteId != -1) {
                 viewModelScope.launch {
-                    reminderUserCases.getReminder(noteId)?.also { reminder ->
+                    reminderUseCases.getReminder(noteId)?.also { reminder ->
                         currentReminderId = reminder.id
                         _reminderTitle.value = reminderTitle.value.copy(
                             text = reminder.title,
@@ -68,8 +71,21 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
                             text = reminder.content,
                             isHintVisible = false
                         )
-
-                        _reminderColor.value = getReminderColorPalette[reminder.color].toArgb()
+                        reminder.location?.let {
+                            _reminderLocation.value = reminderLocation.value.copy(
+                                location = it,
+                                isSelected = true
+                            )
+                        }
+                        reminder.remindTime?.let {
+                            val (hour, minute) = convertTimestampToTime(reminder.timestamp)
+                            _reminderTimestamp.value = reminderTimestamp.value.copy(
+                                isSelected = true,
+                                hour = hour,
+                                minute = minute
+                            )
+                        }
+                        _reminderColor.value = reminder.color
                     }
                 }
             }
@@ -106,6 +122,33 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
                 _reminderColor.value = event.color
             }
 
+            is AddEditReminderEvent.ChangeLocation -> {
+                _reminderLocation.value = reminderLocation.value.copy(
+                    location = event.location,
+                )
+
+            }
+
+            is AddEditReminderEvent.ChangeLocationSelection -> {
+                _reminderLocation.value = reminderLocation.value.copy(
+                    isSelected = event.isSelected
+                )
+            }
+
+            is AddEditReminderEvent.ChangeReminderTime -> {
+
+                _reminderTimestamp.value = reminderTimestamp.value.copy(
+                    hour = event.timePair?.first,
+                    minute = event.timePair?.second
+                )
+            }
+
+            is AddEditReminderEvent.ChangeTimeSelection -> {
+                _reminderTimestamp.value = reminderTimestamp.value.copy(
+                    isSelected = event.isSelected
+                )
+            }
+
             is AddEditReminderEvent.SaveReminder -> {
                 var newReminder = Reminder(
                     id = currentReminderId,
@@ -113,14 +156,17 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
                     content = reminderContent.value.text,
                     timestamp = System.currentTimeMillis(),
                     color = reminderColor.value,
-                    location = reminderLocation.value,
-                    remindTime = reminderTimestamp.value
+                    location = if (reminderLocation.value.isSelected) reminderLocation.value.location else null,
+                    remindTime = if (reminderTimestamp.value.isSelected) convertTimeToTimestamp(
+                        reminderTimestamp.value.hour,
+                        reminderTimestamp.value.minute
+                    ) else null
 
                 )
 
                 viewModelScope.launch {
                     try {
-                        reminderUserCases.addReminder(newReminder)
+                        reminderUseCases.addReminder(newReminder)
                         _eventFLow.emit(UiEvent.SaveNote)
 
                     } catch (e: InvalidNoteException) {
@@ -130,10 +176,10 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUserCases
                 }
             }
 
-            is AddEditReminderEvent.ChangeLocation -> TODO()
-            is AddEditReminderEvent.ChangeReminderTime -> TODO()
+
         }
     }
+
 
 
     sealed class UiEvent {

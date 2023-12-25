@@ -31,7 +31,11 @@ class GetReminders(private val repository: ReminderRepository) {
                         is ReminderOrder.Color -> reminders.sortedByDescending { it.color }
                         is ReminderOrder.Date -> reminders.sortedByDescending { it.timestamp }
                         is ReminderOrder.ReminderTime -> reminders.sortedByDescending { it.remindTime }
-                        is ReminderOrder.Location -> reminders.sortedByDescending { it.location?.latitude }
+                        is ReminderOrder.Location -> reminders.sortedByDescending {
+                            (it.location?.longitude?.let { longitude ->
+                                it.location?.latitude?.plus(longitude)
+                            }) ?: 0.0
+                        }
                     }
 
                 }

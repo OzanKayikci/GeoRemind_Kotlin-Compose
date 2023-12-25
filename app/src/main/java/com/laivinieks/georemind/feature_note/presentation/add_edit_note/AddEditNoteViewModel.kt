@@ -29,7 +29,8 @@ class AddEditNoteViewModel @Inject constructor(private val noteUseCases: NoteUse
     private val _noteContent = mutableStateOf(NoteTextFieldState(hint = "Enter content"))
     val noteContent: State<NoteTextFieldState> = _noteContent
 
-    private val _noteColor = mutableStateOf(Note.defaultNoteColors.random().toArgb())
+    // we get index of note color
+    private val _noteColor = mutableStateOf(getNoteColorPalette.indexOf(getNoteColorPalette.random()))
     val noteColor: State<Int> = _noteColor
 
     private val _eventFLow = MutableSharedFlow<UiEvent>()
@@ -57,7 +58,7 @@ class AddEditNoteViewModel @Inject constructor(private val noteUseCases: NoteUse
                             isHintVisible = false
                         )
 
-                        _noteColor.value = getNoteColorPalette[note.color].toArgb()
+                        _noteColor.value = note.color
                     }
                 }
             }

@@ -24,7 +24,7 @@ import com.laivinieks.georemind.feature_reminder.domain.use_case.AddReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.DeleteReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminders
-import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUserCases
+import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUseCases
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.CheckLocationSettingsUseCase
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.LocationUseCases
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.StartLocationUpdatesUseCase
@@ -78,8 +78,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideReminderUseCases(repository: ReminderRepository): ReminderUserCases {
-        return ReminderUserCases(
+    fun provideReminderUseCases(repository: ReminderRepository): ReminderUseCases {
+        return ReminderUseCases(
             getReminders = GetReminders(repository = repository),
             deleteReminder = DeleteReminder(repository = repository),
             addReminder = AddReminder(repository = repository),

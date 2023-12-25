@@ -1,7 +1,8 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
 
-
+import android.location.Location
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 
 import androidx.compose.animation.fadeIn
@@ -50,14 +51,17 @@ import androidx.compose.ui.text.style.TextOverflow
 
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.android.gms.maps.model.LatLng
 
 
 import com.laivinieks.georemind.core.presentation.components.ColorPicker
+import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.LocationSelectorState
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.ReminderTimeSelectorState
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location.LocationPickerDialog
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.TimePickerDialog
 
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location.LaunchPermissionRequest
-
 
 
 import java.util.Calendar
@@ -69,20 +73,25 @@ fun BottomSheetContent(
     modifier: Modifier = Modifier,
     iteratedNoteColors: List<Color>,
     selectedColor: Int,
-    newColor: (Int) -> Unit,
+    locationState: LocationSelectorState,
+    reminderTimeState: ReminderTimeSelectorState,
+    newValues: (newColor: Int?, newLocation: LocationSelectorState?, newTime: ReminderTimeSelectorState?) -> Unit,
 ) {
 
 
     var selectedHour by remember {
-        mutableIntStateOf(Calendar.getInstance()[Calendar.HOUR_OF_DAY])
+        mutableIntStateOf(reminderTimeState.hour ?: Calendar.getInstance()[Calendar.HOUR_OF_DAY])
     }
 
     var selectedMinute by remember {
-        mutableIntStateOf(Calendar.getInstance()[Calendar.MINUTE])
+        mutableIntStateOf(reminderTimeState.minute ?: Calendar.getInstance()[Calendar.MINUTE])
     }
 
+    var selectedLocation by remember {
+        mutableStateOf(locationState.location)
+    }
     var selectedLocationName by remember {
-        mutableStateOf("Choose Location")
+        mutableStateOf(locationState.location?.let { it.locationName } ?: "Choose Location")
     }
 
     var showTimeDialog by remember {
@@ -92,11 +101,16 @@ fun BottomSheetContent(
         mutableStateOf(false)
     }
 
-    var selectTime by remember { mutableStateOf(false) }
-    var selectLocation by remember { mutableStateOf(false) }
+    var selectTime by remember { mutableStateOf(reminderTimeState.isSelected) }
+    var selectLocation by remember { mutableStateOf(locationState.isSelected) }
 
     var showLocationPermission by remember {
         mutableStateOf(false)
+    }
+
+
+    var newColor: (Int) -> Unit = {
+        newValues(it, null, null)
     }
 
     Column(
@@ -117,7 +131,10 @@ fun BottomSheetContent(
             LaunchPermissionRequest() { isGranted ->
                 if (isGranted) {
                     selectLocation = true
+
                     showLocationDialog = true
+                } else {
+                    selectLocation = false
                 }
                 showLocationPermission = false
             }
@@ -132,19 +149,29 @@ fun BottomSheetContent(
                 showTimeDialog = lshowDialog
                 selectedHour = lselectedHour
                 selectedMinute = lselectedMinute
+
+                val timeState = ReminderTimeSelectorState(selectTime, selectedHour, selectedMinute)
+                newValues(null, null, timeState)
             }
         }
 
-        // dialog fir location picker
+        // dialog for location picker
         if (showLocationDialog) {
-            LocationPickerDialog() { showDialog, locationName ->
+            LocationPickerDialog(selectedLocation) { showDialog, locationData ->
                 showLocationDialog = showDialog
-                if (locationName.isNotBlank()) {
-                    selectedLocationName = locationName
+                if (locationData != null) {
+                    if (locationData.locationName.isNotBlank()) {
+                        selectedLocationName = locationData.locationName
+                        selectedLocation = locationData
 
+                    } else {
+                        selectLocation = false
+                    }
                 } else {
                     selectLocation = false
                 }
+                val locationState = LocationSelectorState(selectLocation, locationData)
+                newValues(null, locationState, null)
 
             }
         }
@@ -167,20 +194,11 @@ fun BottomSheetContent(
                     checked = selectTime,
                     onCheckedChange = {
                         selectTime = it
+                        val timeState = ReminderTimeSelectorState(it, selectedHour, selectedMinute)
+                        newValues(null, null, timeState)
                     },
-                    thumbContent = if (selectTime) {
-                        {
-//                            Icon(
-//                                imageVector = Icons.Rounded.Check,
-//                                contentDescription = null,
-//                                modifier = Modifier.size(SwitchDefaults.IconSize),
-//                                tint = MaterialTheme.colorScheme.primary,
-//                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
+
+                    )
 
                 TextButton(
                     enabled = selectTime,
@@ -208,8 +226,7 @@ fun BottomSheetContent(
 
         /** button for choosing location*/
         Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
         )
 
         {
@@ -217,11 +234,10 @@ fun BottomSheetContent(
             AnimatebleBox(state = selectLocation, modifier = Modifier.matchParentSize())
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(if (selectLocation) 0.78f else 1f)
+                    .fillMaxWidth(0.78f)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
 
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (!selectLocation) Arrangement.Center else Arrangement.Start
+                horizontalArrangement = Arrangement.Start
             ) {
 
                 Switch(
@@ -230,20 +246,12 @@ fun BottomSheetContent(
                     onCheckedChange = {
                         selectLocation = !selectLocation
                         showLocationPermission = it
+
+                        val locationState = LocationSelectorState(selectLocation, selectedLocation)
+                        newValues(null, locationState, null)
                     },
-                    thumbContent = if (selectLocation) {
-                        {
-//                            Icon(
-//                                imageVector = Icons.Filled.Check,
-//                                contentDescription = null,
-//                                modifier = Modifier.size(SwitchDefaults.IconSize),
-//                                tint = MaterialTheme.colorScheme.primary,
-//                            )
-                        }
-                    } else {
-                        null
-                    }
-                )
+
+                    )
 
                 TextButton(
                     enabled = selectLocation,
@@ -258,7 +266,13 @@ fun BottomSheetContent(
                         Modifier.size(30.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(selectedLocationName,maxLines = 1, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleLarge, overflow = TextOverflow.Ellipsis )
+                    Text(
+                        selectedLocationName,
+                        maxLines = 1,
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.titleLarge,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }

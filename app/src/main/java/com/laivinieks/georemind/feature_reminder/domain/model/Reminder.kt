@@ -1,7 +1,5 @@
 package com.laivinieks.georemind.feature_reminder.domain.model
 
-import android.location.Location
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.laivinieks.georemind.core.domain.model.BaseModel
@@ -15,7 +13,7 @@ data class Reminder(
     val content: String,
     val timestamp: Long,
 
-    val location: Location?,
+    val location: LocationData?,
     val remindTime: Long? = null,
     val color: Int, // index of noteColor
 ):BaseModel {

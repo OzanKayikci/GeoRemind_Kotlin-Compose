@@ -61,6 +61,7 @@ import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditReminderScreen(
     navController: NavController,
@@ -72,6 +73,7 @@ fun AddEditReminderScreen(
     val contentState = viewModel.reminderContent.value
     val locationState = viewModel.reminderLocation.value
     val reminderTimeState = viewModel.reminderTimestamp.value
+    val selectedColor = viewModel.reminderColor.value
 
     val scope = rememberCoroutineScope()
 
@@ -81,28 +83,29 @@ fun AddEditReminderScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+
+    val iteratedReminderColor = iterateOverNoteColors(LocalCustomColorsPalette.current)
+
     val noteBackgroundAnimatable = remember {
         Animatable(
-            Color(if (reminderColor != -1) reminderColor else viewModel.reminderColor.value)
+            Color(if (reminderColor != -1) iteratedReminderColor[reminderColor].toArgb() else iteratedReminderColor[selectedColor].toArgb())
         )
     }
 
 
-    val iteratedReminderColor =iterateOverNoteColors( LocalCustomColorsPalette.current)
-
 
     LaunchedEffect(key1 = true) {
 
-        val initColor = iteratedReminderColor.random()
-
-        viewModel.updateReminderColor((iteratedReminderColor.indexOf(initColor)), iteratedReminderColor).also {
-            noteBackgroundAnimatable.animateTo(
-                targetValue = Color(initColor.toArgb()),
-                animationSpec = tween(
-                    durationMillis = 500
-                ),
-            )
-        }
+//        val initColor = iteratedReminderColor.random()
+//
+//        viewModel.updateReminderColor((iteratedReminderColor.indexOf(initColor)), iteratedReminderColor).also {
+//            noteBackgroundAnimatable.animateTo(
+//                targetValue = Color(initColor.toArgb()),
+//                animationSpec = tween(
+//                    durationMillis = 500
+//                ),
+//            )
+//        }
 
 
         viewModel.eventFlow.collectLatest { event ->
@@ -210,17 +213,36 @@ fun AddEditReminderScreen(
                         BottomSheetContent(
                             modifier = Modifier.fillMaxWidth(),
                             iteratedNoteColors = iteratedReminderColor,
-                            selectedColor = viewModel.reminderColor.value,
-                        ){newColor ->
-                            if(newColor != viewModel.reminderColor.value){
-                                viewModel.onEvent(AddEditReminderEvent.ChangeColor(newColor))
-                                scope.launch {
-                                    noteBackgroundAnimatable.animateTo(
-                                        targetValue = iteratedReminderColor[newColor],
-                                        animationSpec = tween(
-                                            durationMillis = 500
-                                        ),
-                                    )
+                            selectedColor = selectedColor,
+                            locationState = locationState,
+                            reminderTimeState = reminderTimeState
+                        ) { newColor, newLocation, newTime ->
+
+                            newColor?.let { color ->
+                                if (color != selectedColor) {
+                                    viewModel.onEvent(AddEditReminderEvent.ChangeColor(color))
+                                    scope.launch {
+                                        noteBackgroundAnimatable.animateTo(
+                                            targetValue = iteratedReminderColor[color],
+                                            animationSpec = tween(
+                                                durationMillis = 500
+                                            ),
+                                        )
+                                    }
+                                }
+                            }
+
+                            newLocation?.let { locationState ->
+                                if (locationState != viewModel.reminderLocation.value) {
+                                    viewModel.onEvent(AddEditReminderEvent.ChangeLocationSelection(locationState.isSelected))
+                                    viewModel.onEvent(AddEditReminderEvent.ChangeLocation(locationState.location))
+                                }
+                            }
+                            newTime?.let { timeState ->
+                                if (timeState != viewModel.reminderTimestamp.value) {
+                                    viewModel.onEvent(AddEditReminderEvent.ChangeTimeSelection(timeState.isSelected))
+                                    viewModel.onEvent(AddEditReminderEvent.ChangeReminderTime(Pair(timeState.hour!!, timeState.minute!!)))
+
                                 }
                             }
 

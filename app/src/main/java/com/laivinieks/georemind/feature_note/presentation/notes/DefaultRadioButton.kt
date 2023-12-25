@@ -1,7 +1,12 @@
 package com.laivinieks.georemind.feature_note.presentation.notes
 
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -14,6 +19,7 @@ import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 
 @Composable
@@ -25,16 +31,19 @@ fun DefaultRadioButton(
 ) {
 
     Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.padding(16.dp,8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
     ) {
         RadioButton(
+            modifier = Modifier.size(20.dp)
+            ,
             selected = selected, onClick = onSelect, colors = RadioButtonDefaults.colors(
                 selectedColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 unselectedColor = MaterialTheme.colorScheme.onBackground
-            )
+            ),
         )
-        //Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = text,
             color = if (selected) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onBackground,

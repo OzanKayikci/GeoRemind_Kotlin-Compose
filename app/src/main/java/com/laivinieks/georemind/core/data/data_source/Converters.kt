@@ -1,18 +1,18 @@
 package com.laivinieks.georemind.core.data.data_source
 
-import android.location.Location
 import androidx.room.TypeConverter
 import com.google.gson.Gson
+import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
 
 class Converters {
 
     @TypeConverter
-    fun fromLocation(location: Location?): String? {
+    fun fromLocation(location: LocationData?): String? {
         return Gson().toJson(location)
     }
 
     @TypeConverter
-    fun toLocation(locationString: String?): Location? {
-        return Gson().fromJson(locationString, Location::class.java)
+    fun toLocation(locationString: String?): LocationData? {
+        return Gson().fromJson(locationString, LocationData::class.java)
     }
 }
