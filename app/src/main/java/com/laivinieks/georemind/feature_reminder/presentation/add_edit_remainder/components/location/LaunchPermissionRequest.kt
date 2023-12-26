@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location
+package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location
 
 import android.app.Activity
 import android.content.Intent
@@ -40,7 +40,9 @@ import androidx.compose.ui.unit.dp
 
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.laivinieks.georemind.core.data.data_source.UserPreferencesDataStore
+import com.laivinieks.georemind.core.domain.util.Constants
 
 import kotlinx.coroutines.launch
 
@@ -55,7 +57,7 @@ fun LaunchPermissionRequest(
 
     val dataStore = UserPreferencesDataStore(context)
 
-    val permissionDeniedTwice = dataStore.getPermissionIsDenied.collectAsState(initial = false)
+    val permissionDeniedTwice = dataStore.getLocationPermissionIsDenied.collectAsState(initial = false)
 
 
     val locationPermissionsState = rememberMultiplePermissionsState(
@@ -72,7 +74,7 @@ fun LaunchPermissionRequest(
 
     if (locationPermissionsState.allPermissionsGranted) {
         scope.launch {
-            dataStore.storePermissionIsDenied(false)
+            dataStore.storePermissionIsDenied(false, Constants.KEY_PERMISSION_LOCATION)
         }
         isGranted(true)
     } else {
@@ -142,7 +144,7 @@ fun LaunchPermissionRequest(
                         onClick = {
                             if (locationPermissionsState.shouldShowRationale) {
                                 scope.launch {
-                                    dataStore.storePermissionIsDenied(true)
+                                    dataStore.storePermissionIsDenied(true, Constants.KEY_PERMISSION_LOCATION)
                                 }
                             }
                             if (!permissionDeniedTwice.value) {
@@ -187,25 +189,26 @@ enum class PermissionStep(
     PERMISSION_QUEST(
         title = "Location Permission",
         description = "Getting your location is important for this feature.",
-        buttonText = "Request permissions"
+        buttonText = "Request Permissions"
     ),
     FINE_LOCATION_QUEST(
         title = "Fine Location Permission",
         description = "Thanks for letting app access your approximate location.\n But The feature needs fine location access to work properly.",
-        buttonText = "Allow precise location"
+        buttonText = "Allow Precise Location"
     ),
     RATIONALE_DIALOG(
         title = "Location Permission",
         description = " \"The app need your exact location is important for this feature. Please grant us fine location \n" +
-                "Otherwise you can use this feature",
-        buttonText = "Request permissions"
+                "Otherwise you can't use this feature",
+        buttonText = "Request Permissions"
     ),
     PERMANENTLY_DENIED(
         title = "Location Permission",
         description = "The app need your exact location is important for this feature. \n" +
                 "You can grant access in the application settings.",
-        buttonText = "Go to app settings"
-    )
+        buttonText = "Go to App Settings"
+    ),
+
 }
 
 fun goToAppSetting(activity: Activity) {

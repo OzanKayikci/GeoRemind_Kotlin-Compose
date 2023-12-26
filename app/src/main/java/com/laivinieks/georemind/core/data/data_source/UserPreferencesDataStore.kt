@@ -16,15 +16,19 @@ class UserPreferencesDataStore(private val context: Context) {
 
     }
 
-    suspend fun storePermissionIsDenied(isDenied: Boolean) {
+    suspend fun storePermissionIsDenied(isDenied: Boolean, permissionType: Preferences.Key<Boolean>) {
         context.dataStore.edit { preferences ->
-            preferences[Constants.KEY_PERMISSION_LOCATION] = isDenied
+            preferences[permissionType] = isDenied
         }
     }
 
-    // Function to retrieve the dark mode value
-    val getPermissionIsDenied: Flow<Boolean> = context.dataStore.data.map { preferences ->
+    val getLocationPermissionIsDenied: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[Constants.KEY_PERMISSION_LOCATION] ?: false
+    }
+
+
+    val getNotificationPermissionIsDenied: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[Constants.KEY_PERMISSION_NOTIFICATION] ?: false
     }
 
 

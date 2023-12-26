@@ -56,6 +56,7 @@ import com.laivinieks.georemind.core.domain.util.Converters
 import com.laivinieks.georemind.core.presentation.components.TransparentHintTextField
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteEvent
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteViewModel
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.NotificationPermissionRequest
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 import kotlinx.coroutines.flow.collectLatest
@@ -80,6 +81,7 @@ fun AddEditReminderScreen(
     val sheetState = rememberModalBottomSheetState()
 
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showNotificationRequest by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -93,6 +95,12 @@ fun AddEditReminderScreen(
     }
 
 
+    if (showNotificationRequest) {
+        NotificationPermissionRequest() { isGranted ->
+            showBottomSheet = isGranted
+            showNotificationRequest = false
+        }
+    }
 
     LaunchedEffect(key1 = true) {
 
@@ -241,7 +249,15 @@ fun AddEditReminderScreen(
                             newTime?.let { timeState ->
                                 if (timeState != viewModel.reminderTimestamp.value) {
                                     viewModel.onEvent(AddEditReminderEvent.ChangeTimeSelection(timeState.isSelected))
-                                    viewModel.onEvent(AddEditReminderEvent.ChangeReminderTime(Pair(timeState.hour!!, timeState.minute!!)))
+                                    viewModel.onEvent(
+                                        AddEditReminderEvent.ChangeReminderTime(
+                                            Triple(
+                                                timeState.hour!!,
+                                                timeState.minute!!,
+                                                timeState.date!!
+                                            )
+                                        )
+                                    )
 
                                 }
                             }
@@ -263,7 +279,7 @@ fun AddEditReminderScreen(
                     .offset(y = (-10).dp)
                     .size(250.dp, 50.dp),
 
-                onClick = { showBottomSheet = true }
+                onClick = { showNotificationRequest = true }
             ) {
                 Icon(
                     imageVector = Icons.Rounded.KeyboardArrowUp,

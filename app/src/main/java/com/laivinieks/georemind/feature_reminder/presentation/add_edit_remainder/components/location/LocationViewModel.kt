@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location
+package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location
 
 import android.app.Activity
 import android.content.IntentSender

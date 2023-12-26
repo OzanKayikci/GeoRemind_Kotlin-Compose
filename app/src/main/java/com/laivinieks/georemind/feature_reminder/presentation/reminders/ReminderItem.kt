@@ -118,37 +118,7 @@ fun ReminderItem(
                     .padding(vertical = 4.dp), verticalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                // reminder time text
-                reminder.remindTime?.let {
-                    val (hour, minute) = TimeConverters.convertTimestampToTime(it)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.WatchLater,
-                            contentDescription = "reminder",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(20.dp)
-                        )
-                        Text(
-                            text = "$hour : $minute",
 
-                                    style = MaterialTheme . typography . bodyMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.ExtraBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(horizontal = 6.dp),
-
-                            )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
 
                 // location text
                 reminder.location?.let {
@@ -178,9 +148,39 @@ fun ReminderItem(
 
                             )
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                // reminder time text
+                reminder.remindTime?.let {
+                    val (hour, minute, date) = TimeConverters.convertTimestampToTime(it)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.WatchLater,
+                            contentDescription = "reminder",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                        Text(
+                            text = "$hour : $minute - $date",
+
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.ExtraBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .padding(horizontal = 6.dp),
+
+                            )
+                    }
 
                 }
-
                 // no reminder text
                 if (reminder.location == null && reminder.remindTime == null) {
                     Row(

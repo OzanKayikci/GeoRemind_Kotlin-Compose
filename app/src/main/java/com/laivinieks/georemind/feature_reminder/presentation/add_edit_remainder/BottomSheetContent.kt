@@ -1,8 +1,7 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
 
-import android.location.Location
-import android.util.Log
+import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
 
 import androidx.compose.animation.fadeIn
@@ -50,24 +49,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.android.gms.maps.model.LatLng
 
 
 import com.laivinieks.georemind.core.presentation.components.ColorPicker
-import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
-import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.LocationSelectorState
-import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.ReminderTimeSelectorState
-import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location.LocationPickerDialog
-import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.TimePickerDialog
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location.LocationSelectorState
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time.ReminderTimeSelectorState
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location.LocationPickerDialog
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time.TimePickerDialog
 
-import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location.LaunchPermissionRequest
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location.LaunchPermissionRequest
 
 
 import java.util.Calendar
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BottomSheetContent(
     modifier: Modifier = Modifier,
@@ -78,15 +73,22 @@ fun BottomSheetContent(
     newValues: (newColor: Int?, newLocation: LocationSelectorState?, newTime: ReminderTimeSelectorState?) -> Unit,
 ) {
 
+    val dateFormat = SimpleDateFormat("dd.MM.yy")
+    val currentTime = Calendar.getInstance()
+
 
     var selectedHour by remember {
-        mutableIntStateOf(reminderTimeState.hour ?: Calendar.getInstance()[Calendar.HOUR_OF_DAY])
+        mutableIntStateOf(reminderTimeState.hour ?: currentTime[Calendar.HOUR_OF_DAY])
     }
 
     var selectedMinute by remember {
-        mutableIntStateOf(reminderTimeState.minute ?: Calendar.getInstance()[Calendar.MINUTE])
+        mutableIntStateOf(reminderTimeState.minute ?: currentTime[Calendar.MINUTE])
     }
 
+    var selectedDate by remember {
+        mutableStateOf(reminderTimeState.date ?:currentTime.timeInMillis)
+
+    }
     var selectedLocation by remember {
         mutableStateOf(locationState.location)
     }
@@ -144,13 +146,14 @@ fun BottomSheetContent(
         if (showTimeDialog) {
             TimePickerDialog(
                 selectedHour = selectedHour,
-                selectedMinute = selectedMinute
-            ) { lshowDialog, lselectedHour, lselectedMinute ->
+                selectedMinute = selectedMinute,
+                selectedDate = selectedDate,
+            ) { lshowDialog, lselectedHour, lselectedMinute, lselectedDate ->
                 showTimeDialog = lshowDialog
                 selectedHour = lselectedHour
                 selectedMinute = lselectedMinute
-
-                val timeState = ReminderTimeSelectorState(selectTime, selectedHour, selectedMinute)
+                selectedDate = lselectedDate
+                val timeState = ReminderTimeSelectorState(selectTime, selectedHour, selectedMinute,selectedDate)
                 newValues(null, null, timeState)
             }
         }
@@ -184,7 +187,7 @@ fun BottomSheetContent(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(0.78f)
+                    .fillMaxWidth(0.8f)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
 
                 horizontalArrangement = Arrangement.Start
@@ -194,7 +197,7 @@ fun BottomSheetContent(
                     checked = selectTime,
                     onCheckedChange = {
                         selectTime = it
-                        val timeState = ReminderTimeSelectorState(it, selectedHour, selectedMinute)
+                        val timeState = ReminderTimeSelectorState(it, selectedHour, selectedMinute,selectedDate)
                         newValues(null, null, timeState)
                     },
 
@@ -215,7 +218,13 @@ fun BottomSheetContent(
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        if (!selectTime) "Choose Time" else String.format("%02d:%02d", selectedHour, selectedMinute),
+                        if (!selectTime) "Choose Time" else "${
+                            String.format(
+                                " %02d : %02d ",
+                                selectedHour,
+                                selectedMinute
+                            )
+                        } - ${dateFormat.format(selectedDate)}",
                         fontWeight = FontWeight.ExtraBold,
                         style = MaterialTheme.typography.titleLarge,
 
@@ -234,7 +243,7 @@ fun BottomSheetContent(
             AnimatebleBox(state = selectLocation, modifier = Modifier.matchParentSize())
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(0.78f)
+                    .fillMaxWidth(0.8f)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
 
                 horizontalArrangement = Arrangement.Start

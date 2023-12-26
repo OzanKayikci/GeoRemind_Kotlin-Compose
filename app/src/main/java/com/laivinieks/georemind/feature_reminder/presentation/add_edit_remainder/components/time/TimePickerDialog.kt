@@ -1,5 +1,9 @@
-package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components
+package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time
 
+import android.icu.text.SimpleDateFormat
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,15 +19,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +55,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.laivinieks.georemind.R
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,33 +64,38 @@ fun TimePickerDialog(
     modifier: Modifier = Modifier,
     selectedHour: Int = 0,
     selectedMinute: Int = 0,
-
+    selectedDate: Long = 0,
     callback: (
         showDialog: Boolean,
         selectedHour: Int,
-        selectedMinute: Int
+        selectedMinute: Int,
+        selectedDate: Long
     ) -> Unit
 
 ) {
+    val dateFormat = SimpleDateFormat("dd.MM.yy")
 
-    var localSelectedHour by remember {
-        mutableIntStateOf(selectedHour) // or use  mutableStateOf(0)
+
+    var isTimeSelection by remember {
+        mutableStateOf(true)
     }
 
-    var localSelectedMinute by remember {
-        mutableIntStateOf(selectedMinute) // or use  mutableStateOf(0)
-    }
     val timePickerState = rememberTimePickerState(
-        initialHour = localSelectedHour,
-        initialMinute = localSelectedMinute
+        initialHour = selectedHour,
+        initialMinute = selectedMinute
     )
+    val datePickerState = rememberDatePickerState(
+        initialDisplayMode = DisplayMode.Picker,
+        initialSelectedDateMillis = selectedDate,
+        yearRange = IntRange(Calendar.getInstance()[Calendar.YEAR], 2100),
 
+    )
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         modifier = Modifier
             .fillMaxWidth(),
-        onDismissRequest = { callback(false, localSelectedHour, localSelectedMinute) }
+        onDismissRequest = { callback(false, timePickerState.hour, timePickerState.minute, datePickerState.selectedDateMillis!!) }
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -92,7 +107,7 @@ fun TimePickerDialog(
                     .background(Color.Black.copy(alpha = 0.3f))
                     .fillMaxSize()
                     .clickable {
-                        callback(false, localSelectedHour, localSelectedMinute)
+                        callback(false, timePickerState.hour, timePickerState.minute, datePickerState.selectedDateMillis!!)
                     },
             )
             Column(
@@ -109,8 +124,43 @@ fun TimePickerDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 // time picker
-                TimePicker(state = timePickerState)
+                AnimatedVisibility(
+                    visible = isTimeSelection,
+
+                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        TimePicker(state = timePickerState)
+                        TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
+                            Text(
+                                text = "${dateFormat.format(datePickerState.selectedDateMillis)}",
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = 32.sp)
+                            )
+                        }
+                    }
+
+                }
+
+                // date picker
+                AnimatedVisibility(
+                    visible = !isTimeSelection,
+
+                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
+                            Text(
+                                text = "${timePickerState.hour}: ${timePickerState.minute}",
+                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 32.sp)
+                            )
+                        }
+                        DatePicker(
+                            state = datePickerState,
+
+                            )
+                    }
+                }
 
 
                 // buttons
@@ -121,7 +171,7 @@ fun TimePickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // dismiss button
-                    TextButton(onClick = { callback(false, localSelectedHour, localSelectedMinute) }) {
+                    TextButton(onClick = { callback(false, timePickerState.hour, timePickerState.minute, datePickerState.selectedDateMillis!!) }) {
                         Text(
                             text = "Dismiss",
                             style = MaterialTheme.typography.titleLarge,
@@ -134,9 +184,7 @@ fun TimePickerDialog(
                     TextButton(
                         onClick = {
 
-                            localSelectedHour = timePickerState.hour
-                            localSelectedMinute = timePickerState.minute
-                            callback(false, localSelectedHour, localSelectedMinute)
+                            callback(false, timePickerState.hour, timePickerState.minute, datePickerState.selectedDateMillis!!)
                         }
                     ) {
                         Text(text = "Confirm", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

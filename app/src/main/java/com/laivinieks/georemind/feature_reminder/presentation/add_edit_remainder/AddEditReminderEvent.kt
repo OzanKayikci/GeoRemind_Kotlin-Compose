@@ -13,7 +13,7 @@ sealed class AddEditReminderEvent {
     data class ChangeColor(val color: Int) : AddEditReminderEvent()
     data class ChangeLocation(val location: LocationData?) : AddEditReminderEvent()
     data class ChangeLocationSelection(val isSelected: Boolean) : AddEditReminderEvent()
-    data class ChangeReminderTime(val timePair: Pair<Int,Int>?) : AddEditReminderEvent()
+    data class ChangeReminderTime(val timeTriple: Triple<Int,Int,Long>?) : AddEditReminderEvent()
     data class ChangeTimeSelection(val isSelected: Boolean) : AddEditReminderEvent()
     object SaveReminder : AddEditReminderEvent()
 }

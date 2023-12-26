@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.location
+package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location
 
 import android.app.Activity
 import android.util.Log
@@ -51,6 +51,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberMarkerState
 import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
 import kotlinx.coroutines.cancel
@@ -119,7 +120,7 @@ fun LocationPickerDialog(
     DisposableEffect(Unit) {
         viewModel.checkLocationSettings(context as Activity) { isLocationEnabled ->
             if (!isLocationEnabled) {
-                callback(false,null)
+                callback(false, null)
 
                 Toast.makeText(context, "Location settings are not satisfied. Please open location", Toast.LENGTH_LONG).show()
             } else {
@@ -141,22 +142,26 @@ fun LocationPickerDialog(
     var longitude = locationState?.longitude ?: 0.0
 
 
-    val selectedLocationMarkerStete = selectedLocation?.let {
+    var selectedLocationMarkerState = selectedLocation?.let {
         rememberMarkerState(
-            key = "location",
+
             position = LatLng(selectedLocation.latitude, selectedLocation.longitude)
         )
     } ?: rememberMarkerState(
-        key = "location",
-        position = LatLng(latitude, longitude)
+
+        position = LatLng(viewModel.location.value?.latitude ?: 0.0, viewModel.location.value?.longitude ?: 0.0)
     )
 
 
 
+    val (latitudeLoc, longitudeLoc) = if (selectedLocationMarkerState.position.latitude != 0.0) selectedLocationMarkerState.position.let {
+        Pair(it.latitude, it.longitude)
+    } else Pair(latitude, longitude)
+
     if (getLocationName) {
 
         scope.launch {
-            getLocationName(context = context, latitude = latitude, longitude = longitude) { isFetched, name ->
+            getLocationName(context = context, latitude = latitudeLoc, longitude = longitudeLoc) { isFetched, name ->
                 locationName = name
             }
 
@@ -164,6 +169,7 @@ fun LocationPickerDialog(
         getLocationName = false
 
     }
+    Log.d("poss, $latitude", latitudeLoc.toString())
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -193,17 +199,18 @@ fun LocationPickerDialog(
                 onMapClick = { latLng ->
                     latitude = latLng.latitude
                     longitude = latLng.longitude
+                    selectedLocationMarkerState.position = latLng
                 },
                 cameraPositionState =
-                CameraPositionState(CameraPosition(LatLng(latitude, longitude), 18f, 0f, 0f))
+                CameraPositionState(CameraPosition(LatLng(latitudeLoc, longitudeLoc), 18f, 0f, 0f))
 
 
             ) {
 
                 Marker(
-                    state = selectedLocationMarkerStete,
+                    state = selectedLocationMarkerState,
                     title = "Clicked Location", // Optional title for the marker
-                    snippet = "Latitude: ${selectedLocationMarkerStete.position.latitude}, Longitude: ${selectedLocationMarkerStete.position.longitude}" // Optional snippet
+                    snippet = "Latitude: ${selectedLocationMarkerState.position.latitude}, Longitude: ${selectedLocationMarkerState.position.longitude}" // Optional snippet
 
                 )
 
