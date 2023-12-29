@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
         )
-
         setContent {
             GeoRemindTheme {
                 // A surface container using the 'background' color from the theme

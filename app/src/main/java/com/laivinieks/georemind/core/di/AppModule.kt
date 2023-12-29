@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 
 import androidx.room.Room
+import com.google.android.gms.location.LocationServices
 import com.laivinieks.georemind.core.data.data_source.GeoRemindDatabase
 import com.laivinieks.georemind.core.domain.util.Constants
 
@@ -16,16 +17,19 @@ import com.laivinieks.georemind.feature_note.domain.use_case.GetNote
 import com.laivinieks.georemind.feature_note.domain.use_case.GetNotes
 import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases
 import com.laivinieks.georemind.feature_reminder.data.repository.LocationRepositoryImpl
+import com.laivinieks.georemind.feature_reminder.data.service.DefaultLocationClient
 import com.laivinieks.georemind.feature_reminder.data.service.LocationManagerImp
+import com.laivinieks.georemind.feature_reminder.data.service.LocationService
 import com.laivinieks.georemind.feature_reminder.domain.repository.LocationRepository
 import com.laivinieks.georemind.feature_reminder.domain.repository.ReminderRepository
+import com.laivinieks.georemind.feature_reminder.domain.service.LocationClient
 import com.laivinieks.georemind.feature_reminder.domain.service.LocationManager
 import com.laivinieks.georemind.feature_reminder.domain.use_case.AddReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.DeleteReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminders
 import com.laivinieks.georemind.feature_reminder.domain.use_case.ReminderUseCases
-import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.CheckLocationSettingsUseCase
+
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.LocationUseCases
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.StartLocationUpdatesUseCase
 import com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_case.StopLocationUpdatesUseCase
@@ -91,21 +95,19 @@ object AppModule {
 
     /** LOCATION IMPLEMENTATIONS*/
 
+
     @Provides
     @Singleton
-    fun provideLocationManager(@ApplicationContext context: Context): LocationManager {
-        return LocationManagerImp(
-            context,
-            Constants.LOCATION_REQUEST_INTERVAL,
-            Constants.LOCATION_MINIMAL_DISTANCE
-        )
+    fun provideLocationClient(@ApplicationContext context: Context): LocationClient {
+        return DefaultLocationClient(context, LocationServices.getFusedLocationProviderClient(context))
     }
 
     @Provides
     @Singleton
-    fun provideLocationRepository(locationManager: LocationManager): LocationRepository {
-        return LocationRepositoryImpl(locationManager)
+    fun provideLocationRepository(locationClient: LocationClient): LocationRepository {
+        return LocationRepositoryImpl(locationClient)
     }
+
 
     @Provides
     @Singleton
@@ -117,10 +119,6 @@ object AppModule {
             stopLocationUpdatesUseCase = StopLocationUpdatesUseCase(
                 locationRepository = repository
             ),
-            checkLocationSettingsUseCase = CheckLocationSettingsUseCase(
-                locationRepository = repository
-            ),
-
 
             )
     }

@@ -86,9 +86,7 @@ fun ReminderItem(
 
                     )
                 IconButton(
-                    onClick = {
-
-                    },
+                    onClick = onDeleteClick,
                     modifier = Modifier.size(24.dp),
                 ) {
                     Icon(modifier = Modifier.size(24.dp), imageVector = Icons.Rounded.Close, contentDescription = "delete reminder")
@@ -117,7 +115,6 @@ fun ReminderItem(
                     .fillMaxSize()
                     .padding(vertical = 4.dp), verticalArrangement = Arrangement.SpaceEvenly
             ) {
-
 
 
                 // location text

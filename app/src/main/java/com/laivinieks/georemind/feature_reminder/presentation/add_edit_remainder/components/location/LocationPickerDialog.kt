@@ -54,6 +54,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberMarkerState
 import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
+import com.laivinieks.georemind.ui.theme.DarkText
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -118,17 +119,8 @@ fun LocationPickerDialog(
 
 
     DisposableEffect(Unit) {
-        viewModel.checkLocationSettings(context as Activity) { isLocationEnabled ->
-            if (!isLocationEnabled) {
-                callback(false, null)
 
-                Toast.makeText(context, "Location settings are not satisfied. Please open location", Toast.LENGTH_LONG).show()
-            } else {
-                viewModel.startLocationUpdates()
-            }
-
-
-        }
+        viewModel.startLocationUpdates(context)
 
         onDispose {
             viewModel.stopLocationUpdates()
@@ -144,7 +136,6 @@ fun LocationPickerDialog(
 
     var selectedLocationMarkerState = selectedLocation?.let {
         rememberMarkerState(
-
             position = LatLng(selectedLocation.latitude, selectedLocation.longitude)
         )
     } ?: rememberMarkerState(
@@ -169,7 +160,6 @@ fun LocationPickerDialog(
         getLocationName = false
 
     }
-    Log.d("poss, $latitude", latitudeLoc.toString())
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -228,7 +218,7 @@ fun LocationPickerDialog(
                         .fillMaxWidth(0.7f),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    color = if (isNormalMapType) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
+                    color = if (isNormalMapType) com.laivinieks.georemind.ui.theme.Text else DarkText
                 )
 
                 Row(

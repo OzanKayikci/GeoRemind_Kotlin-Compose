@@ -17,5 +17,10 @@ object Constants {
     val KEY_PERMISSION_LOCATION = booleanPreferencesKey("locationPermission")
     val KEY_PERMISSION_NOTIFICATION = booleanPreferencesKey("notificationPermission")
 
+    const val LOCATION_NOTIFICATION_ID = "LOCATION"
+
+    const val GPS_DISABLED = "GPS_DISABLED"
+    const val NETWORK_DISABLED = "NETWORK_DISABLED"
+    const val PERMISSIONS_MISSING = "PERMISSIONS_MISSING"
 
 }

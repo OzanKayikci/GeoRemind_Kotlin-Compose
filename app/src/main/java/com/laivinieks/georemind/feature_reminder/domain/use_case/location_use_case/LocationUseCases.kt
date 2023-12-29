@@ -8,5 +8,5 @@ package com.laivinieks.georemind.feature_reminder.domain.use_case.location_use_c
 data class LocationUseCases(
     val startLocationUpdatesUseCase: StartLocationUpdatesUseCase,
     val stopLocationUpdatesUseCase: StopLocationUpdatesUseCase,
-    val checkLocationSettingsUseCase: CheckLocationSettingsUseCase
+//    val checkLocationSettingsUseCase: CheckLocationSettingsUseCase
 )

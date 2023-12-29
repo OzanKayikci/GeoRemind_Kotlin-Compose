@@ -56,7 +56,6 @@ class LocationManagerImp(
     override fun checkLocationSettings(onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val locationSettingsBuilder = LocationSettingsRequest.Builder().addLocationRequest(request)
         val locationSettingsClient = LocationServices.getSettingsClient(context)
-
         val task = locationSettingsClient.checkLocationSettings(locationSettingsBuilder.build())
 
         task.addOnSuccessListener {
@@ -65,6 +64,9 @@ class LocationManagerImp(
         }
 
         task.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException) {
+                exception
+            }
             Log.d("EXCEPTION", exception.toString())
             onFailure.invoke(exception)
         }

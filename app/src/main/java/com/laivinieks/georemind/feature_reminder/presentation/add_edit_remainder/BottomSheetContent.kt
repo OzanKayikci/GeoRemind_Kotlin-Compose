@@ -187,7 +187,7 @@ fun BottomSheetContent(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth(0.85f)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
 
                 horizontalArrangement = Arrangement.Start
@@ -243,7 +243,7 @@ fun BottomSheetContent(
             AnimatebleBox(state = selectLocation, modifier = Modifier.matchParentSize())
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth(0.85f)
                     .padding(horizontal = 16.dp, vertical = 24.dp),
 
                 horizontalArrangement = Arrangement.Start

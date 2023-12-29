@@ -2,6 +2,7 @@ package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainde
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -80,6 +81,7 @@ fun TimePickerDialog(
         mutableStateOf(true)
     }
 
+
     val timePickerState = rememberTimePickerState(
         initialHour = selectedHour,
         initialMinute = selectedMinute
@@ -89,7 +91,10 @@ fun TimePickerDialog(
         initialSelectedDateMillis = selectedDate,
         yearRange = IntRange(Calendar.getInstance()[Calendar.YEAR], 2100),
 
-    )
+        )
+
+
+
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -112,7 +117,7 @@ fun TimePickerDialog(
             )
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+
                     .background(
                         color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(size = 16.dp)
@@ -120,49 +125,51 @@ fun TimePickerDialog(
                     .clickable {
 
                     }
-                    .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // time picker
-                AnimatedVisibility(
-                    visible = isTimeSelection,
+                Column(modifier = Modifier.padding(vertical = if (isTimeSelection) 58.dp else 0.dp)) {
 
+
+                    // time picker
+                    AnimatedVisibility(
+                        visible = isTimeSelection,
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                        TimePicker(state = timePickerState)
-                        TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
-                            Text(
-                                text = "${dateFormat.format(datePickerState.selectedDateMillis)}",
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = 32.sp)
+                            TimePicker(state = timePickerState)
+                            TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
+                                Text(
+                                    text = "${dateFormat.format(datePickerState.selectedDateMillis)}",
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = 32.sp)
+                                )
+                            }
+                        }
+
+                    }
+
+                    // date picker
+                    AnimatedVisibility(
+                        visible = !isTimeSelection,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
+                                Text(
+                                    text = "${timePickerState.hour}: ${timePickerState.minute}",
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 32.sp)
+                                )
+                            }
+                            DatePicker(
+                                state = datePickerState,
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     }
-
                 }
-
-                // date picker
-                AnimatedVisibility(
-                    visible = !isTimeSelection,
-
-                    ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        TextButton(onClick = { isTimeSelection = !isTimeSelection }) {
-                            Text(
-                                text = "${timePickerState.hour}: ${timePickerState.minute}",
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 32.sp)
-                            )
-                        }
-                        DatePicker(
-                            state = datePickerState,
-
-                            )
-                    }
-                }
-
-
                 // buttons
                 Row(
                     modifier = Modifier

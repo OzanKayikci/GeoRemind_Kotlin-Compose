@@ -2,6 +2,7 @@
 
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
+import android.content.Intent
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -49,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -56,6 +58,7 @@ import com.laivinieks.georemind.core.domain.util.Converters
 import com.laivinieks.georemind.core.presentation.components.TransparentHintTextField
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteEvent
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteViewModel
+import com.laivinieks.georemind.feature_reminder.data.service.LocationService
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.NotificationPermissionRequest
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
@@ -69,6 +72,8 @@ fun AddEditReminderScreen(
     reminderColor: Int,
     viewModel: AddEditReminderViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
 
     val titleState = viewModel.reminderTitle.value
     val contentState = viewModel.reminderContent.value
@@ -93,7 +98,6 @@ fun AddEditReminderScreen(
             Color(if (reminderColor != -1) iteratedReminderColor[reminderColor].toArgb() else iteratedReminderColor[selectedColor].toArgb())
         )
     }
-
 
     if (showNotificationRequest) {
         NotificationPermissionRequest() { isGranted ->

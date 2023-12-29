@@ -4,6 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,12 +37,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.laivinieks.georemind.core.data.data_source.UserPreferencesDataStore
@@ -59,7 +69,7 @@ fun LaunchPermissionRequest(
 
     val permissionDeniedTwice = dataStore.getLocationPermissionIsDenied.collectAsState(initial = false)
 
-
+    val backgroundLocationPermissionsState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     val locationPermissionsState = rememberMultiplePermissionsState(
         listOf(
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -72,13 +82,45 @@ fun LaunchPermissionRequest(
     }
 
 
-    if (locationPermissionsState.allPermissionsGranted) {
+    if (locationPermissionsState.allPermissionsGranted && backgroundLocationPermissionsState.status.isGranted) {
         scope.launch {
             dataStore.storePermissionIsDenied(false, Constants.KEY_PERMISSION_LOCATION)
         }
         isGranted(true)
     } else {
 
+        var onlyBackgroundWaiting = false
+
+        val allPermissionsRevoked =
+            locationPermissionsState.permissions.size ==
+                    locationPermissionsState.revokedPermissions.size
+        if (!allPermissionsRevoked) {
+            permissionStep = PermissionStep.FINE_LOCATION_QUEST
+        } else {
+            if (permissionDeniedTwice.value) {
+                permissionStep = PermissionStep.PERMANENTLY_DENIED
+
+            } else if (locationPermissionsState.shouldShowRationale) {
+
+                permissionStep = PermissionStep.RATIONALE_DIALOG
+
+            }
+        }
+        if (locationPermissionsState.allPermissionsGranted && !backgroundLocationPermissionsState.status.isGranted) {
+            permissionStep = PermissionStep.BACKGROUND_LOCATION_QUEST
+            onlyBackgroundWaiting = true
+        }
+
+        val descText = buildAnnotatedString {
+            append(permissionStep.description)
+            if (onlyBackgroundWaiting) {
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)) {
+                    append("'Allow all the time'")
+                }
+                append(" checkbox in the location permissions in the app permissions in the app settings ")
+            }
+
+        }
 
         AlertDialog(
             modifier = Modifier
@@ -87,24 +129,8 @@ fun LaunchPermissionRequest(
                     color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(size = 16.dp)
                 ),
-            onDismissRequest = { isGranted(false) })
+            onDismissRequest = { isGranted(onlyBackgroundWaiting) })
         {
-
-            val allPermissionsRevoked =
-                locationPermissionsState.permissions.size ==
-                        locationPermissionsState.revokedPermissions.size
-            if (!allPermissionsRevoked) {
-                permissionStep = PermissionStep.FINE_LOCATION_QUEST
-            } else {
-                if (permissionDeniedTwice.value) {
-                    permissionStep = PermissionStep.PERMANENTLY_DENIED
-
-                } else if (locationPermissionsState.shouldShowRationale) {
-
-                    permissionStep = PermissionStep.RATIONALE_DIALOG
-
-                }
-            }
 
 
             Box(
@@ -133,7 +159,7 @@ fun LaunchPermissionRequest(
                     )
                     Divider(modifier = Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
                     Text(
-                        text = permissionStep.description,
+                        text = descText,
                         textAlign = TextAlign.Justify,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -142,23 +168,28 @@ fun LaunchPermissionRequest(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         onClick = {
-                            if (locationPermissionsState.shouldShowRationale) {
-                                scope.launch {
-                                    dataStore.storePermissionIsDenied(true, Constants.KEY_PERMISSION_LOCATION)
+                            if (onlyBackgroundWaiting) {
+                                goToAppSetting(context as Activity)
+                            } else {
+                                if (locationPermissionsState.shouldShowRationale) {
+                                    scope.launch {
+                                        dataStore.storePermissionIsDenied(true, Constants.KEY_PERMISSION_LOCATION)
+                                    }
+                                }
+                                if (!permissionDeniedTwice.value) {
+                                    locationPermissionsState.launchMultiplePermissionRequest()
+
+                                } else {
+
+
                                 }
                             }
-                            if (!permissionDeniedTwice.value) {
 
-                                locationPermissionsState.launchMultiplePermissionRequest()
-                            } else {
-
-                                goToAppSetting(context as Activity)
-                            }
                         }) {
                         Text(
+                            fontWeight = FontWeight.SemiBold,
                             text = permissionStep.buttonText,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -208,6 +239,12 @@ enum class PermissionStep(
                 "You can grant access in the application settings.",
         buttonText = "Go to App Settings"
     ),
+    BACKGROUND_LOCATION_QUEST(
+        title = "Background Location Permission",
+        description = "Everything is perfect. Now you can use the map.\n" +
+                "However, if you want location-based reminders, you need to check the  ",
+        buttonText = "Go to App Settings"
+    )
 
 }
 
