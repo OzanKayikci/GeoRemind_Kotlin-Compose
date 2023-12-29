@@ -39,8 +39,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.laivinieks.georemind.feature_note.domain.util.Converters
-import com.laivinieks.georemind.feature_note.presentation.add_edit_note.components.TransparentHintTextField
+import com.laivinieks.georemind.core.domain.util.Converters
+import com.laivinieks.georemind.core.presentation.components.ColorPicker
+import com.laivinieks.georemind.core.presentation.components.TransparentHintTextField
 import com.laivinieks.georemind.ui.theme.LocalCustomColorsPalette
 import com.laivinieks.georemind.ui.theme.iterateOverNoteColors
 import kotlinx.coroutines.flow.collectLatest
@@ -54,31 +55,33 @@ fun AddEditNoteScreen(
 ) {
     val titleState = viewModel.noteTitle.value
     val contentState = viewModel.noteContent.value
-
+    val colorState = viewModel.noteColor.value
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val iteratedNoteColor = iterateOverNoteColors(LocalCustomColorsPalette.current)
 
     val noteBackgroundAnimatable = remember {
         Animatable(
-            Color(if (noteColor != -1) noteColor else viewModel.noteColor.value)
+            Color(if (noteColor != -1) iteratedNoteColor[noteColor].toArgb() else iteratedNoteColor[colorState].toArgb())
         )
     }
 
     val scope = rememberCoroutineScope()
 
-    val noteColors = LocalCustomColorsPalette.current
 
     LaunchedEffect(key1 = true) {
-        var iteratedNoteColor = iterateOverNoteColors(noteColors)
-        val initColor = iteratedNoteColor.random()
-        viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
-            noteBackgroundAnimatable.animateTo(
-                targetValue = Color(initColor.toArgb()),
-                animationSpec = tween(
-                    durationMillis = 500
-                ),
-            )
-        }
 
+        // we use it in LaunchedEffect because animateTo is a suspend function and it must call with coroutine
+
+//        val initColor = iteratedNoteColor.random()
+//        viewModel.updateNoteColor((iteratedNoteColor.indexOf(initColor)), iteratedNoteColor).also {
+//            noteBackgroundAnimatable.animateTo(
+//                targetValue = Color(initColor.toArgb()),
+//                animationSpec = tween(
+//                    durationMillis = 500
+//                ),
+//            )
+//        }
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is AddEditNoteViewModel.UiEvent.ShowSnackBar -> {
@@ -114,44 +117,25 @@ fun AddEditNoteScreen(
                 .fillMaxSize()
                 .padding(horizontal = 8.dp, vertical = paddingValues.calculateTopPadding() / 4)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val colors = iterateOverNoteColors(noteColors)
-                colors.forEach { color ->
-                    val colorInt = color.toArgb()
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .shadow(15.dp, CircleShape)
-                            .clip(CircleShape)
-                            .background(color)
-                            .border(
-                                width = 3.dp,
-                                color = if (viewModel.noteColor.value == colorInt) {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                } else Color.Transparent,
-                                shape = CircleShape
-                            )
-                            .clickable {
-                                scope.launch {
-                                    noteBackgroundAnimatable.animateTo(
-                                        targetValue = Color(colorInt),
-                                        animationSpec = tween(
-                                            durationMillis = 500
-                                        ),
-                                    )
-                                }
-                                viewModel.onEvent(AddEditNoteEvent.ChangeColor(colors.indexOf(color)))
-                            }
-                    ) {
-
+            // color picker for note color
+            ColorPicker(
+                noteColors = iteratedNoteColor,
+                selectedColor = viewModel.noteColor.value
+            ) { newColor ->
+                //it's index of color
+                if (newColor != viewModel.noteColor.value) {
+                    viewModel.onEvent(AddEditNoteEvent.ChangeColor(newColor))
+                    scope.launch {
+                        noteBackgroundAnimatable.animateTo(
+                            targetValue = iteratedNoteColor[newColor],
+                            animationSpec = tween(
+                                durationMillis = 500
+                            ),
+                        )
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(

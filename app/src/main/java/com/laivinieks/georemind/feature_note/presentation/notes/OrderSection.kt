@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.laivinieks.georemind.feature_note.domain.util.NoteOrder
-import com.laivinieks.georemind.feature_note.domain.util.OrderType
+import com.laivinieks.georemind.core.domain.util.OrderType
 
 @Composable
 fun OrderSection(

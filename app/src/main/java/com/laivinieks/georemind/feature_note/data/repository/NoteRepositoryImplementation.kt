@@ -8,20 +8,20 @@ import kotlinx.coroutines.flow.Flow
 class NoteRepositoryImplementation(
     private val dao:NoteDao
 
-):NoteRepository {
-    override fun getNotes(): Flow<List<Note>> {
+):NoteRepository{
+    override fun getModels(): Flow<List<Note>> {
         return dao.getNotes()
     }
 
-    override suspend fun getNoteById(id: Int): Note? {
+    override suspend fun getModelById(id: Int): Note? {
        return dao.getNoteById(id)
     }
 
-    override suspend fun insertNote(note: Note) {
+    override suspend fun insertModel(note: Note) {
       dao.insertNotes(note)
     }
 
-    override suspend fun deleteNote(note: Note) {
+    override suspend fun deleteModel(note: Note) {
         dao.deleteNote(note)
     }
 }

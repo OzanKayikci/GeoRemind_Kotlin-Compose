@@ -13,17 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.laivinieks.georemind.core.presentation.GeoRemindBottomBar
-import com.laivinieks.georemind.core.presentation.GeoRemindNavHost
-import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteScreen
-import com.laivinieks.georemind.feature_note.presentation.notes.NotesScreen
-import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
-import com.laivinieks.georemind.feature_remainder.presentation.remainders.RemaindersScreen
+import com.laivinieks.georemind.core.presentation.navigation.GeoRemindBottomBar
+import com.laivinieks.georemind.core.presentation.navigation.GeoRemindNavHost
 import com.laivinieks.georemind.ui.theme.GeoRemindTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +27,6 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
         )
-
         setContent {
             GeoRemindTheme {
                 // A surface container using the 'background' color from the theme

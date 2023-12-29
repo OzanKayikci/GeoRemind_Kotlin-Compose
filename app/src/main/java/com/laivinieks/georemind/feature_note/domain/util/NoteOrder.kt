@@ -1,6 +1,6 @@
 package com.laivinieks.georemind.feature_note.domain.util
 
-import com.laivinieks.georemind.feature_note.domain.util.OrderType
+import com.laivinieks.georemind.core.domain.util.OrderType
 
 sealed class NoteOrder(val orderType: OrderType) {
     class Title(orderType: OrderType) : NoteOrder(orderType)

@@ -3,6 +3,7 @@ package com.laivinieks.georemind.feature_note.domain.modal
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.laivinieks.georemind.R
+import com.laivinieks.georemind.core.domain.model.BaseModel
 import com.laivinieks.georemind.ui.theme.*
 
 @Entity
@@ -13,7 +14,7 @@ data class Note(
     val content: String,
     val timestamp: Long,
     val color: Int, // index of noteColor
-) {
+):BaseModel {
     companion object {
         val defaultNoteColors = listOf(MarkColor1, MarkColor2, MarkColor3, MarkColor4, MarkColor5, MarkColor6)
 

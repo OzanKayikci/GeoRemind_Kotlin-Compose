@@ -2,7 +2,6 @@ package com.laivinieks.georemind.feature_note.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,8 +10,7 @@ import androidx.navigation.navArgument
 import com.laivinieks.georemind.feature_note.presentation.add_edit_note.AddEditNoteScreen
 
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesScreen
-import com.laivinieks.georemind.feature_note.presentation.util.FeatureScreen
-import com.laivinieks.georemind.feature_remainder.presentation.remainders.RemaindersScreen
+import com.laivinieks.georemind.feature_note.presentation.util.NoteFeatureScreen
 
 @Composable
 fun FeatureNoteNavHost(
@@ -21,14 +19,14 @@ fun FeatureNoteNavHost(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = FeatureScreen.NotesFeatureScreen.route,
+        startDestination = NoteFeatureScreen.NotesScreen.route,
         modifier = modifier
     ) {
-        composable(route = FeatureScreen.NotesFeatureScreen.route) {
+        composable(route = NoteFeatureScreen.NotesScreen.route) {
             NotesScreen(navController = navController)
         }
 
-        composable(route = FeatureScreen.AddEditNoteFeatureScreen.route +
+        composable(route = NoteFeatureScreen.AddEditNoteScreen.route +
                 "?noteId={noteId}&noteColor={noteColor}", // this parameters are optional
 
             arguments = listOf(

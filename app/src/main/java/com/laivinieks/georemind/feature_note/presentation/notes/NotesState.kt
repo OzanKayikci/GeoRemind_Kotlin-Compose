@@ -2,7 +2,7 @@ package com.laivinieks.georemind.feature_note.presentation.notes
 
 import com.laivinieks.georemind.feature_note.domain.modal.Note
 import com.laivinieks.georemind.feature_note.domain.util.NoteOrder
-import com.laivinieks.georemind.feature_note.domain.util.OrderType
+import com.laivinieks.georemind.core.domain.util.OrderType
 
 /**
 * we did this because we want to keep states in our viewmodel
