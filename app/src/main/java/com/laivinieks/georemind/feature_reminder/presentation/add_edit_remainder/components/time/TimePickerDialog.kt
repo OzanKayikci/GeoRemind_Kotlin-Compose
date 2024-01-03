@@ -1,5 +1,6 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time
 
+import android.app.AlarmManager
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.content.getSystemService
 import com.laivinieks.georemind.R
 import java.util.Calendar
 import java.util.Date
@@ -92,8 +95,6 @@ fun TimePickerDialog(
         yearRange = IntRange(Calendar.getInstance()[Calendar.YEAR], 2100),
 
         )
-
-
 
 
     AlertDialog(
@@ -178,7 +179,14 @@ fun TimePickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // dismiss button
-                    TextButton(onClick = { callback(false, timePickerState.hour, timePickerState.minute, datePickerState.selectedDateMillis!!) }) {
+                    TextButton(onClick = {
+                        callback(
+                            false,
+                            timePickerState.hour,
+                            timePickerState.minute,
+                            datePickerState.selectedDateMillis!!
+                        )
+                    }) {
                         Text(
                             text = "Dismiss",
                             style = MaterialTheme.typography.titleLarge,
@@ -200,5 +208,6 @@ fun TimePickerDialog(
 
             }
         }
+
     }
 }

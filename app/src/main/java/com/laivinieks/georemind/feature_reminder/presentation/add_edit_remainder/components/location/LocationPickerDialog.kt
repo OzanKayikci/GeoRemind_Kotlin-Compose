@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,7 +55,9 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberMarkerState
+import com.laivinieks.georemind.core.presentation.components.TransparentHintTextField
 import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.AddEditReminderEvent
 import com.laivinieks.georemind.ui.theme.DarkText
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -117,7 +121,11 @@ fun LocationPickerDialog(
         mutableStateOf(selectedLocation?.let { it.locationName } ?: "")
     }
 
+    var isModifyLocationName by remember {
+        mutableStateOf(false)
+    }
 
+    var modifiedLocaitonName = viewModel.customLocationName.value
     DisposableEffect(Unit) {
 
         viewModel.startLocationUpdates(context)
@@ -154,6 +162,7 @@ fun LocationPickerDialog(
         scope.launch {
             getLocationName(context = context, latitude = latitudeLoc, longitude = longitudeLoc) { isFetched, name ->
                 locationName = name
+                isModifyLocationName = true
             }
 
         }
@@ -172,7 +181,10 @@ fun LocationPickerDialog(
             )
             .padding(4.dp),
         onDismissRequest = {
-            callback(false, LocationData(latitude, longitude, locationName))
+            callback(
+                false,
+                LocationData(latitudeLoc, longitudeLoc, if (!modifiedLocaitonName.isNullOrBlank()) modifiedLocaitonName else locationName)
+            )
         }
     ) {
 
@@ -186,10 +198,12 @@ fun LocationPickerDialog(
                 modifier = Modifier.matchParentSize(),
                 properties = properties,
                 uiSettings = uiSettings,
-                onMapClick = { latLng ->
+                onMapLongClick = { latLng ->
                     latitude = latLng.latitude
                     longitude = latLng.longitude
                     selectedLocationMarkerState.position = latLng
+                    isModifyLocationName = false
+                    viewModel.setCustomLocationName(null)
                 },
                 cameraPositionState =
                 CameraPositionState(CameraPosition(LatLng(latitudeLoc, longitudeLoc), 18f, 0f, 0f))
@@ -212,7 +226,7 @@ fun LocationPickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = locationName,
+                    text = if (!modifiedLocaitonName.isNullOrBlank()) modifiedLocaitonName else locationName,
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(0.7f),
@@ -241,18 +255,50 @@ fun LocationPickerDialog(
                         }
                     )
 
+                    if (!isModifyLocationName) {
+                        Button(
+                            onClick = {
+                                getLocationName = true
 
-                    Button(
-                        onClick = {
-                            getLocationName = true
+                            }) {
+                            Text(text = "Select Location")
+                        }
+                    } else {
+                        TransparentHintTextField(
 
-                        }) {
-                        Text(text = "Select Location")
+                            text = modifiedLocaitonName ?: "",
+                            hint = "Set Custom Location Name",
+                            onValueChange = {
+                                viewModel.setCustomLocationName(it)
+                            },
+                            alignment = Alignment.Center,
+                            onFocusChange = {},
+                            isHintVisible = modifiedLocaitonName.isNullOrBlank(),
+                            maxLine = 1,
+                            textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+
+                                .clip(
+                                    RoundedCornerShape(16.dp)
+                                )
+                                .background(MaterialTheme.colorScheme.errorContainer)
+                                .padding( 12.dp,6.dp)
+                        )
                     }
 
-
                     IconButton(
-                        onClick = { callback(false, LocationData(latitude, longitude, locationName)) },
+                        onClick = {
+                            callback(
+                                false,
+                                LocationData(
+                                    latitudeLoc,
+                                    longitudeLoc,
+                                    if (!modifiedLocaitonName.isNullOrBlank()) modifiedLocaitonName else locationName
+                                )
+                            )
+                        },
                         modifier = Modifier
                             .padding(8.dp)
                             .clip(CircleShape)

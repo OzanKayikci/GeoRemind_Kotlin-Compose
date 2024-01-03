@@ -27,6 +27,14 @@ class LocationViewModel @Inject constructor(
     private val locationUseCases: LocationUseCases
 ) : ViewModel() {
 
+
+    private var _customLocationName = mutableStateOf<String?>(null)
+    val customLocationName : MutableState<String?> = _customLocationName
+
+    fun setCustomLocationName(name: String?) {
+        _customLocationName.value = name
+    }
+
     private var _location = mutableStateOf<Location?>(null)
     val location: MutableState<Location?> = _location
 

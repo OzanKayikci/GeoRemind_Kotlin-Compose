@@ -6,10 +6,17 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.LocationServices
 import com.laivinieks.georemind.core.data.data_source.GeoRemindDatabase
-import com.laivinieks.georemind.core.domain.util.Constants
+import com.laivinieks.georemind.feature_geofence.data.GeofenceManager
+import com.laivinieks.georemind.feature_geofence.data.GeofenceRepositoryImp
+import com.laivinieks.georemind.feature_geofence.domain.repository.GeofenceRepository
+import com.laivinieks.georemind.feature_geofence.domain.use_case.AddGeofenceUseCase
+import com.laivinieks.georemind.feature_geofence.domain.use_case.CreateGeofenceUseCase
+import com.laivinieks.georemind.feature_geofence.domain.use_case.GeofenceUseCases
+import com.laivinieks.georemind.feature_geofence.domain.use_case.GetAllLocationsUseCase
+import com.laivinieks.georemind.feature_geofence.domain.use_case.RemoveGeofenceUseCase
+import com.laivinieks.georemind.feature_geofence.presentation.NotificationHelper
 
 import com.laivinieks.georemind.feature_note.data.repository.NoteRepositoryImplementation
-import com.laivinieks.georemind.feature_note.data.repository.ReminderRepositoryImplementation
 import com.laivinieks.georemind.feature_note.domain.repository.NoteRepository
 import com.laivinieks.georemind.feature_note.domain.use_case.AddNote
 import com.laivinieks.georemind.feature_note.domain.use_case.DeleteNote
@@ -17,13 +24,11 @@ import com.laivinieks.georemind.feature_note.domain.use_case.GetNote
 import com.laivinieks.georemind.feature_note.domain.use_case.GetNotes
 import com.laivinieks.georemind.feature_note.domain.use_case.NoteUseCases
 import com.laivinieks.georemind.feature_reminder.data.repository.LocationRepositoryImpl
+import com.laivinieks.georemind.feature_reminder.data.repository.ReminderRepositoryImplementation
 import com.laivinieks.georemind.feature_reminder.data.service.DefaultLocationClient
-import com.laivinieks.georemind.feature_reminder.data.service.LocationManagerImp
-import com.laivinieks.georemind.feature_reminder.data.service.LocationService
 import com.laivinieks.georemind.feature_reminder.domain.repository.LocationRepository
 import com.laivinieks.georemind.feature_reminder.domain.repository.ReminderRepository
 import com.laivinieks.georemind.feature_reminder.domain.service.LocationClient
-import com.laivinieks.georemind.feature_reminder.domain.service.LocationManager
 import com.laivinieks.georemind.feature_reminder.domain.use_case.AddReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.DeleteReminder
 import com.laivinieks.georemind.feature_reminder.domain.use_case.GetReminder
@@ -68,6 +73,15 @@ object AppModule {
         return ReminderRepositoryImplementation(db.reminderDao)
     }
 
+    //geofence part
+    @Provides
+    @Singleton
+    fun providerGeofenceManager(app: Application): GeofenceManager {
+
+        return GeofenceManager(app)
+    }
+
+
     // we initialize data class of usecases
     @Provides
     @Singleton
@@ -78,6 +92,36 @@ object AppModule {
             addNote = AddNote(repository),
             getNote = GetNote(repository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeofenceRepository(geofenceManager: GeofenceManager): GeofenceRepository {
+        return GeofenceRepositoryImp(geofenceManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeofenceUseCases(repository: GeofenceRepository): GeofenceUseCases {
+        return GeofenceUseCases(
+            addGeofenceUseCase = AddGeofenceUseCase(repository),
+            createGeofenceUseCase = CreateGeofenceUseCase(repository),
+            removeGeofenceUseCase = RemoveGeofenceUseCase(repository)
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllLocationsUseCase(repository: ReminderRepository): GetAllLocationsUseCase {
+        return GetAllLocationsUseCase(repository)
+    }
+
+    //Notification
+    @Provides
+    @Singleton
+    fun provideNotificationHelper(app: Application): NotificationHelper {
+        return NotificationHelper(app)
     }
 
     @Provides

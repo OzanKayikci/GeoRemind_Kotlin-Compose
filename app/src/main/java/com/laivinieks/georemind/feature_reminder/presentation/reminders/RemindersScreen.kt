@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.laivinieks.georemind.R
+import com.laivinieks.georemind.feature_geofence.presentation.GeofenceViewModel
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesEvent
 
 import com.laivinieks.georemind.feature_reminder.presentation.reminders.OrderSection
@@ -56,7 +58,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun RemindersScreen(
     navController: NavController,
-    viewModel: RemindersViewModel = hiltViewModel()
+    viewModel: RemindersViewModel = hiltViewModel(),
+    geofenceViewModel: GeofenceViewModel = hiltViewModel()
 
 ) {
 
@@ -67,6 +70,12 @@ fun RemindersScreen(
         Animatable(1f)
     }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(geofenceViewModel.locations.value) {
+        if (geofenceViewModel.locations.value.isNotEmpty()) {
+            geofenceViewModel.createGeofence()
+        }
+    }
 
     Scaffold(
         snackbarHost = {
