@@ -1,6 +1,7 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
 
+import android.app.AlarmManager
 import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
 
@@ -43,12 +44,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 
 
 import com.laivinieks.georemind.core.presentation.components.ColorPicker
@@ -58,6 +61,7 @@ import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time.TimePickerDialog
 
 import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.location.LaunchPermissionRequest
+import com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder.components.time.ExactAlarmPermission
 
 
 import java.util.Calendar
@@ -73,6 +77,9 @@ fun BottomSheetContent(
     newValues: (newColor: Int?, newLocation: LocationSelectorState?, newTime: ReminderTimeSelectorState?) -> Unit,
 ) {
 
+    val context = LocalContext.current
+    val alarmManager: AlarmManager = context.getSystemService<AlarmManager>()!!
+
     val dateFormat = SimpleDateFormat("dd.MM.yy")
     val currentTime = Calendar.getInstance()
 
@@ -86,7 +93,7 @@ fun BottomSheetContent(
     }
 
     var selectedDate by remember {
-        mutableStateOf(reminderTimeState.date ?:currentTime.timeInMillis)
+        mutableStateOf(reminderTimeState.date ?: currentTime.timeInMillis)
 
     }
     var selectedLocation by remember {
@@ -107,6 +114,9 @@ fun BottomSheetContent(
     var selectLocation by remember { mutableStateOf(locationState.isSelected) }
 
     var showLocationPermission by remember {
+        mutableStateOf(false)
+    }
+    var showAlarmPermission by remember {
         mutableStateOf(false)
     }
 
@@ -141,7 +151,17 @@ fun BottomSheetContent(
                 showLocationPermission = false
             }
         }
+        if (showAlarmPermission) {
+            ExactAlarmPermission(
+                context = context,
+                alarmManager = alarmManager
+            ) {
+                showAlarmPermission =false
+                selectTime = it
+                showTimeDialog = it
+            }
 
+        }
         // dialog fir time picker
         if (showTimeDialog) {
             TimePickerDialog(
@@ -153,7 +173,7 @@ fun BottomSheetContent(
                 selectedHour = lselectedHour
                 selectedMinute = lselectedMinute
                 selectedDate = lselectedDate
-                val timeState = ReminderTimeSelectorState(selectTime, selectedHour, selectedMinute,selectedDate)
+                val timeState = ReminderTimeSelectorState(selectTime, selectedHour, selectedMinute, selectedDate)
                 newValues(null, null, timeState)
             }
         }
@@ -196,8 +216,9 @@ fun BottomSheetContent(
                 Switch(
                     checked = selectTime,
                     onCheckedChange = {
-                        selectTime = it
-                        val timeState = ReminderTimeSelectorState(it, selectedHour, selectedMinute,selectedDate)
+                        selectTime = !selectTime
+                        showAlarmPermission = it
+                        val timeState = ReminderTimeSelectorState(it, selectedHour, selectedMinute, selectedDate)
                         newValues(null, null, timeState)
                     },
 

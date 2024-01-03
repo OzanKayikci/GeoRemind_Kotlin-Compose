@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.laivinieks.georemind.feature_note.domain.modal.Note
+import com.laivinieks.georemind.feature_reminder.domain.model.LocationData
 import com.laivinieks.georemind.feature_reminder.domain.model.Reminder
 import kotlinx.coroutines.flow.Flow
 
@@ -24,4 +25,6 @@ interface ReminderDao {
 
     @Delete
     suspend fun deleteReminder(reminder: Reminder)
+    @Query("SELECT * FROM Reminder WHERE location IS NOT NULL")
+    fun getAllLocationData(): Flow<List<Reminder>>
 }

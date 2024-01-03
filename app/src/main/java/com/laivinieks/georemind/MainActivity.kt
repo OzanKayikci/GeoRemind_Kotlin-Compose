@@ -1,5 +1,7 @@
 package com.laivinieks.georemind
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,13 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.laivinieks.georemind.core.presentation.navigation.GeoRemindBottomBar
 import com.laivinieks.georemind.core.presentation.navigation.GeoRemindNavHost
+import com.laivinieks.georemind.feature_geofence.presentation.GeofenceBroadcastReceiver
 import com.laivinieks.georemind.ui.theme.GeoRemindTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val geofenceReceiver = GeofenceBroadcastReceiver()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
