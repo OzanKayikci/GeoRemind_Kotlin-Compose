@@ -65,7 +65,7 @@ class AlarmViewModel @Inject constructor(
                     )
                 )
             }
-            Log.d("reminderAlarms", reminderAlarms.toString())
+
             _alarms.value = reminderAlarms
 
         }.launchIn(viewModelScope)

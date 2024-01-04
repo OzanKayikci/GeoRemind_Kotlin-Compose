@@ -21,7 +21,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
     @Inject
     lateinit var notificationHelper: NotificationHelper
     override fun onReceive(context: Context?, intent: Intent) {
-        Log.d("geofence", "onReceive")
+
         // Handle geofence transition events here
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent!!.hasError()) {
@@ -34,7 +34,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofenceTransition = geofencingEvent.geofenceTransition
         when (geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                Log.d("geofence", "Entered")
+
                 // Get the geofences that were triggered. A single event can trigger
                 // multiple geofences.
                 val triggeringGeofences = geofencingEvent.triggeringGeofences

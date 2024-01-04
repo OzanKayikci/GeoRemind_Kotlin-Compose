@@ -58,7 +58,7 @@ fun DefaultRadioButton(
 private fun DefRadioBtnPreview() {
     MaterialTheme {
         Surface {
-            DefaultRadioButton(text = "Date", selected = false, onSelect = { /*TODO*/ })
+            DefaultRadioButton(text = "Date", selected = false, onSelect = {  })
 
         }
     }

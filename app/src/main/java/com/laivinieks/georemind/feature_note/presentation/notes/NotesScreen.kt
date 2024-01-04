@@ -144,7 +144,6 @@ fun NotesScreen(
                                 navController.navigate(NoteFeatureScreen.AddEditNoteScreen.route + "?noteId=${note.id}&noteColor=${note.color}")
                             },
                         onDeleteClick = {
-                            Log.d("clicked delet","da")
                             scope.launch {
                                 itemVisibility.animateTo(targetValue = 0f, animationSpec = tween(2000))
 

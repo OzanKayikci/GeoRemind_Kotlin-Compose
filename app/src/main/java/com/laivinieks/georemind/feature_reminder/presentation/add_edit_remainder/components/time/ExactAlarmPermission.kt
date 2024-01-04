@@ -48,7 +48,7 @@ fun ExactAlarmPermission(
     alarmManager: AlarmManager,
     permissionApproved: (Boolean) -> Unit
 ) {
-    Log.d("in alarm","alalramrrm")
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (!alarmManager.canScheduleExactAlarms()) {
 

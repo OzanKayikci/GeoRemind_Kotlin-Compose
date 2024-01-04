@@ -85,7 +85,6 @@ fun TimePickerDialog(
         mutableStateOf(true)
     }
 
-Log.d("selecteds","$selectedHour, $selectedDate")
     val timePickerState = rememberTimePickerState(
         initialHour = selectedHour,
         initialMinute = selectedMinute

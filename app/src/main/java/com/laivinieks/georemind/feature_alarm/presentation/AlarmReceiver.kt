@@ -16,7 +16,7 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var notificationHelper: NotificationHelper
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        Log.d("alarm", "onRecive")
+
 
         val action = intent?.action
         // Extract the alarmItem id from the action

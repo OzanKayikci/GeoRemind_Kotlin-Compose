@@ -152,7 +152,7 @@ class LocationService : Service() {
                 Toast.makeText(applicationContext, "Location settings are not satisfied. Please open location", Toast.LENGTH_LONG).show()
 
             }, onSuccess = {
-                Log.d("in location service", it.toString())
+
             })
 
 

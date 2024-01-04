@@ -45,10 +45,10 @@ class GeofenceViewModel @Inject constructor(
                 savedLocations.forEach { reminder ->
                     val locationData = reminder.location ?: return@forEach
 
-                    Log.d("locationData", locationData.latitude.toString() + locationData.locationName)
+
                     geofenceLocations = geofenceLocations.plus(
                         LocationGeofenceData(
-                            //TODO: take reminder id as this id
+
                             id = reminder.id.toString(),
                             latitude = locationData.latitude,
                             longitude = locationData.longitude,
@@ -57,7 +57,7 @@ class GeofenceViewModel @Inject constructor(
                         )
                     )
                 }
-                Log.d("lcoaitns", geofenceLocations.toString())
+
                 _locations.value = geofenceLocations
 
             }.launchIn(viewModelScope)
@@ -74,7 +74,7 @@ class GeofenceViewModel @Inject constructor(
     }
 
     private fun addGeofence(geofenceList: List<Geofence>) {
-        Log.d("addGeofence", geofenceList.toString())
+
         viewModelScope.launch {
             geofenceUseCases.addGeofenceUseCase(geofenceList, onSuccess = {
                 Log.d("geofence", "Added success")
