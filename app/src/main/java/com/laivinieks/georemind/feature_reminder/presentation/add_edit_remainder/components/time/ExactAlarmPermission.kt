@@ -107,9 +107,8 @@ fun ExactAlarmPermission(
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                             onClick = {
-
+                                permissionApproved(false)
                                 goToAppSetting(context as Activity)
-
                             }) {
                             Text(
                                 text = "Open App Settings",

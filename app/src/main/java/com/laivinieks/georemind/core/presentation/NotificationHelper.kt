@@ -1,4 +1,4 @@
-package com.laivinieks.georemind.feature_geofence.presentation
+package com.laivinieks.georemind.core.presentation
 
 import android.app.NotificationManager
 import android.content.Context

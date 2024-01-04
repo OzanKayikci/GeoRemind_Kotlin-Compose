@@ -3,6 +3,7 @@
 package com.laivinieks.georemind.feature_reminder.presentation.add_edit_remainder
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -80,6 +81,7 @@ fun AddEditReminderScreen(
     val locationState = viewModel.reminderLocation.value
     val reminderTimeState = viewModel.reminderTimestamp.value
     val selectedColor = viewModel.reminderColor.value
+
 
     val scope = rememberCoroutineScope()
 

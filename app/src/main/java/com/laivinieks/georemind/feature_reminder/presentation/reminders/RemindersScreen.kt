@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.laivinieks.georemind.R
+import com.laivinieks.georemind.feature_alarm.presentation.AlarmViewModel
 import com.laivinieks.georemind.feature_geofence.presentation.GeofenceViewModel
 import com.laivinieks.georemind.feature_note.presentation.notes.NotesEvent
 
@@ -59,8 +60,8 @@ import kotlinx.coroutines.launch
 fun RemindersScreen(
     navController: NavController,
     viewModel: RemindersViewModel = hiltViewModel(),
-    geofenceViewModel: GeofenceViewModel = hiltViewModel()
-
+    geofenceViewModel: GeofenceViewModel = hiltViewModel(),
+    alarmViewModel: AlarmViewModel = hiltViewModel()
 ) {
 
 
@@ -74,6 +75,9 @@ fun RemindersScreen(
     LaunchedEffect(geofenceViewModel.locations.value) {
         if (geofenceViewModel.locations.value.isNotEmpty()) {
             geofenceViewModel.createGeofence()
+        }
+        if (alarmViewModel.alarms.value.isNotEmpty()) {
+            alarmViewModel.createAlarm()
         }
     }
 

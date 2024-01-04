@@ -14,6 +14,10 @@ class ReminderRepositoryImplementation(
         return dao.getAllLocationData()
     }
 
+    override fun getAllSavedAlarms(): Flow<List<Reminder>> {
+        return dao.getAllAlarmData()
+    }
+
     override fun getModels(): Flow<List<Reminder>> {
         return dao.getReminder()
     }

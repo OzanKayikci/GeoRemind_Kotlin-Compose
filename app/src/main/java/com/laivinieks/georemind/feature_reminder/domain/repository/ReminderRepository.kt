@@ -9,4 +9,5 @@ import kotlinx.coroutines.flow.Flow
 interface ReminderRepository : GeoRemindRepository<Reminder> {
 
     fun getAllSavedLocations(): Flow<List<Reminder>>
+    fun getAllSavedAlarms(): Flow<List<Reminder>>
 }

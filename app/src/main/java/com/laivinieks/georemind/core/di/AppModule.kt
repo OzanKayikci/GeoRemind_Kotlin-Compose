@@ -14,7 +14,10 @@ import com.laivinieks.georemind.feature_geofence.domain.use_case.CreateGeofenceU
 import com.laivinieks.georemind.feature_geofence.domain.use_case.GeofenceUseCases
 import com.laivinieks.georemind.feature_geofence.domain.use_case.GetAllLocationsUseCase
 import com.laivinieks.georemind.feature_geofence.domain.use_case.RemoveGeofenceUseCase
-import com.laivinieks.georemind.feature_geofence.presentation.NotificationHelper
+import com.laivinieks.georemind.core.presentation.NotificationHelper
+import com.laivinieks.georemind.feature_alarm.data.AlarmSchedulerImp
+import com.laivinieks.georemind.feature_alarm.domain.AlarmScheduler
+import com.laivinieks.georemind.feature_alarm.domain.use_case.GetAllAlarmsUseCase
 
 import com.laivinieks.georemind.feature_note.data.repository.NoteRepositoryImplementation
 import com.laivinieks.georemind.feature_note.domain.repository.NoteRepository
@@ -52,6 +55,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    /**database provider*/
     @Provides
     @Singleton
     fun provideGeoReminderDatabase(app: Application): GeoRemindDatabase {
@@ -61,26 +65,12 @@ object AppModule {
 
     }
 
+    /**Note part*/
     @Provides
     @Singleton
     fun provideNoteRepository(db: GeoRemindDatabase): NoteRepository {
         return NoteRepositoryImplementation(db.noteDao)
     }
-
-    @Provides
-    @Singleton
-    fun provideReminderRepository(db: GeoRemindDatabase): ReminderRepository {
-        return ReminderRepositoryImplementation(db.reminderDao)
-    }
-
-    //geofence part
-    @Provides
-    @Singleton
-    fun providerGeofenceManager(app: Application): GeofenceManager {
-
-        return GeofenceManager(app)
-    }
-
 
     // we initialize data class of usecases
     @Provides
@@ -94,35 +84,13 @@ object AppModule {
         )
     }
 
+    /** Reminder part*/
     @Provides
     @Singleton
-    fun provideGeofenceRepository(geofenceManager: GeofenceManager): GeofenceRepository {
-        return GeofenceRepositoryImp(geofenceManager)
+    fun provideReminderRepository(db: GeoRemindDatabase): ReminderRepository {
+        return ReminderRepositoryImplementation(db.reminderDao)
     }
 
-    @Provides
-    @Singleton
-    fun provideGeofenceUseCases(repository: GeofenceRepository): GeofenceUseCases {
-        return GeofenceUseCases(
-            addGeofenceUseCase = AddGeofenceUseCase(repository),
-            createGeofenceUseCase = CreateGeofenceUseCase(repository),
-            removeGeofenceUseCase = RemoveGeofenceUseCase(repository)
-
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideGetAllLocationsUseCase(repository: ReminderRepository): GetAllLocationsUseCase {
-        return GetAllLocationsUseCase(repository)
-    }
-
-    //Notification
-    @Provides
-    @Singleton
-    fun provideNotificationHelper(app: Application): NotificationHelper {
-        return NotificationHelper(app)
-    }
 
     @Provides
     @Singleton
@@ -165,6 +133,60 @@ object AppModule {
             ),
 
             )
+    }
+
+
+    /**geofence part*/
+    @Provides
+    @Singleton
+    fun providerGeofenceManager(app: Application): GeofenceManager {
+
+        return GeofenceManager(app)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeofenceRepository(geofenceManager: GeofenceManager): GeofenceRepository {
+        return GeofenceRepositoryImp(geofenceManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeofenceUseCases(repository: GeofenceRepository): GeofenceUseCases {
+        return GeofenceUseCases(
+            addGeofenceUseCase = AddGeofenceUseCase(repository),
+            createGeofenceUseCase = CreateGeofenceUseCase(repository),
+            removeGeofenceUseCase = RemoveGeofenceUseCase(repository)
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllLocationsUseCase(repository: ReminderRepository): GetAllLocationsUseCase {
+        return GetAllLocationsUseCase(repository)
+    }
+
+
+    /**Alarm part*/
+    @Provides
+    @Singleton
+    fun provideAlarmScheduler(app: Application): AlarmScheduler {
+        return AlarmSchedulerImp(app)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetAllAlarmUseCase(repository: ReminderRepository): GetAllAlarmsUseCase {
+        return GetAllAlarmsUseCase(repository)
+    }
+
+
+    /** Notification part */
+    @Provides
+    @Singleton
+    fun provideNotificationHelper(app: Application): NotificationHelper {
+        return NotificationHelper(app)
     }
 
 

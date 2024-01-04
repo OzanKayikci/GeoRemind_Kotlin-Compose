@@ -9,7 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".NoteApp"
         android:allowBackup="false"
@@ -44,6 +45,7 @@
             </intent-filter>
         </activity>
 
+        <!--geofence receiver-->
         <receiver
             android:name=".feature_geofence.presentation.GeofenceBroadcastReceiver"
             android:enabled="true"
@@ -51,6 +53,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.GEOFENCE_TRANSITION" />
+            </intent-filter>
+        </receiver>
+        <!--alarm receiver-->
+        <receiver
+            android:name=".feature_alarm.presentation.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
 

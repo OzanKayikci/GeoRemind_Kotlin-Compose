@@ -74,7 +74,7 @@ class AddEditReminderViewModel @Inject constructor(private val reminderUseCases:
                             )
                         }
                         reminder.remindTime?.let {
-                            val (hour, minute) = convertTimestampToTime(reminder.timestamp)
+                            val (hour, minute) = convertTimestampToTime(reminder.remindTime)
                             _reminderTimestamp.value = reminderTimestamp.value.copy(
                                 isSelected = true,
                                 hour = hour,

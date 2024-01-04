@@ -86,7 +86,7 @@ class GeofenceViewModel @Inject constructor(
         }
     }
 
-    fun removeGeofence() {
+    private fun removeGeofence() {
 
         viewModelScope.launch {
             geofenceUseCases.removeGeofenceUseCase()

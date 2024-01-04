@@ -8,6 +8,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import com.google.gson.Gson
+import com.laivinieks.georemind.core.presentation.NotificationHelper
 import com.laivinieks.georemind.feature_geofence.domain.model.LocationDataForReminder
 
 import dagger.hilt.android.AndroidEntryPoint
