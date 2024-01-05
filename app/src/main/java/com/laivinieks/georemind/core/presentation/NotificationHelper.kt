@@ -17,7 +17,7 @@ class NotificationHelper  @Inject constructor(private val context: Context) {
         val notification = NotificationCompat.Builder(context, Constants.LOCATION_NOTIFICATION_ID)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.ic_bottom_location_add_focused)
+            .setSmallIcon(R.drawable.ic_georemind)
             .build()
 
         // Notify
