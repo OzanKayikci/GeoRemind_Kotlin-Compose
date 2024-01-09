@@ -185,7 +185,7 @@ fun AddEditNoteScreen(
                 maxLine = 20,
                 textStyle = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxSize()
                     .clip(RoundedCornerShape(16.dp))
                     .background(Converters.getSecondaryColor(noteBackgroundAnimatable.value, colorRatio))
                     .padding(vertical = 24.dp, horizontal = 16.dp)

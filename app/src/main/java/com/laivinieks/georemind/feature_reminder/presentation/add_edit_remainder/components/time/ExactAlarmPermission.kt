@@ -48,7 +48,7 @@ fun ExactAlarmPermission(
     alarmManager: AlarmManager,
     permissionApproved: (Boolean) -> Unit
 ) {
-    Log.d("in alarm","alalramrrm")
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (!alarmManager.canScheduleExactAlarms()) {
 
@@ -107,9 +107,8 @@ fun ExactAlarmPermission(
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                             onClick = {
-
+                                permissionApproved(false)
                                 goToAppSetting(context as Activity)
-
                             }) {
                             Text(
                                 text = "Open App Settings",

@@ -163,8 +163,9 @@ fun ReminderItem(
                             modifier = Modifier
                                 .size(20.dp)
                         )
+                        val timeString = String.format(" %02d : %02d ",hour,minute)
                         Text(
-                            text = "$hour : $minute - $date",
+                            text = "$timeString - $date",
 
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,

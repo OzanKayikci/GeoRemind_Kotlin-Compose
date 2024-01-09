@@ -51,7 +51,7 @@ class GeofenceManager @Inject constructor(
 
     private fun getGeofencePendingIntent(): PendingIntent {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
-        Log.d("geofence", "getGeofencePendingIntent")
+
         return PendingIntent.getBroadcast(
             context,
             0,

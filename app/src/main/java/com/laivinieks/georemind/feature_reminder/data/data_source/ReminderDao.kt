@@ -27,4 +27,6 @@ interface ReminderDao {
     suspend fun deleteReminder(reminder: Reminder)
     @Query("SELECT * FROM Reminder WHERE location IS NOT NULL")
     fun getAllLocationData(): Flow<List<Reminder>>
+    @Query("SELECT * FROM Reminder WHERE remindTime IS NOT NULL")
+    fun getAllAlarmData(): Flow<List<Reminder>>
 }
