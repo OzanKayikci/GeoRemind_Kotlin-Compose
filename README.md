@@ -1,12 +1,80 @@
 # GeoRemind
-Under development. note-taking and location-based reminder app
+### - Georemind is an Android app developed with Kotlin that reminds you of your tasks based on your <B>*location and alarm preferences</B>*. You can also write notes.
+### -<B> *Jetpack Compose* </B> was used in the ui of the application. 
+
 
 ## MVVM + Clean Architecture
-I'm using *<B>Clean Architectural</B>* guidline together with *<B>MVVM</B>* Architectural Desing Patten
+I used *<B>Clean Architectural</B>* guidline together with *<B>MVVM</B>* Architectural Desing Patten
 
-Using *<B>Jetpack Compose</B>* with Material3
+# App Presentation:
 
-# Preview:
-|               |              |
-|--------------------|---------------------|
-|![Screenshot_1703060622](https://github.com/OzanKayikci/GeoRemaind_Kotlin-Compose/assets/48061680/3a508230-1c95-4035-8d8e-efe25194601c)|![Screenshot_1703060679](https://github.com/OzanKayikci/GeoRemaind_Kotlin-Compose/assets/48061680/c30ebff9-a336-414f-8faf-b97418c0c3b7)|
+https://github.com/OzanKayikci/GeoRemind_Kotlin-Compose/assets/48061680/8ddbe34a-f4e3-4628-8be3-ac4c037bd879
+
+
+# Folder Structure Preview
+``` kotlin
+ ├── com.laivinieks.georemind
+ |    ├── featureName_feature
+ |    |   ├── data
+ |    |   |   ├── data_source
+ |    |   |   |   └── Dao Object
+ |    |   |   ├── repository
+ |    |   |   |   └── Repository İmplementations
+ |    |   |   └── services(if needed)
+ |    |   |       └── Service Classes
+ |    |   |   
+ |    |   ├── domaion
+ |    |   |   ├── modal
+ |    |   |   |   └── Modals of the feature
+ |    |   |   ├── repository
+ |    |   |   |   └── Interfaces of repositories
+ |    |   |   └── use_case
+ |    |   |   |   ├── AddExampleUseCase
+ |    |   |   |   ├── GetExampleuseCase
+ |    |   |   |   └── DeleteExampleUseCase
+ |    |   |   └── utils
+ |    |   |       └── such as Converters, Constants
+ |    |   | 
+ |    |   └── presentation
+ |    |       ├── example_feature_screen
+ |    |       |   ├── Feature Screen ViewModel
+ |    |       |   ├── Feature Screen Events
+ |    |       |   └── Feature Screen Compose
+ |    |       ├── BroadCast Recievers (if needed)
+ |    |       └── Notification Helper (if needed)
+ |    |   
+ └────└── core (for core operations as db implementations, Repositories if you need for all Features. same structure)
+          ├── data 
+          ├── domaion
+          └── presentation
+```
+
+# Libraries:
+- jetpack compose
+- dagger hilt (also hilt-navigation-compose)
+- compose navigation
+- coroutines ( to manage asynchronous tasks and threads)
+- room (to store reminders and notes)
+- google maps services (also maps for compose)
+- geofence (to monitor user-entered location)
+- accompanist(for permissions)
+- lifecycle(for compose)
+- datastore
+- material3
+
+# Components:
+- Compose
+- Broadcast Reciever(to trigger notifications)
+- Alarm manager(to access system alarm service)
+- Pending intent (to defer an action representation)
+- Notification manager
+- Flow (for dao)
+- NavHostController (navigate between composes)
+
+
+
+
+
+
+
+
